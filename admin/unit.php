@@ -1,17 +1,21 @@
 <?php 
 
 require '../utility/function.php';
+session_start();
+
+//constant agar bisa mengakses components navbar dan sidebar
+define("root",true);
 
 $data = $_GET['data'];
 
     if($data == 'poli klinik'){
         $poliKlinik = select("SELECT tb_unit.*,tb_biodata_user.nama FROM tb_unit JOIN tb_akun_user
                       ON tb_unit.id_akun_dokter = tb_akun_user.id JOIN tb_biodata_user 
-                      ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_unit.id>1");
+                      ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_unit.id>1 ORDER BY tb_unit.nama_unit");
     }elseif($data == 'jadwal poli klinik'){
         $jadwalPoliKlinik = select("SELECT tb_jadwal.*,tb_unit.nama_unit,tb_biodata_user.nama as nama_dokter FROM tb_jadwal JOIN tb_unit
                             ON tb_jadwal.id_unit = tb_unit.id JOIN tb_akun_user ON tb_unit.id_akun_dokter = tb_akun_user.id 
-                            JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_jadwal.id_unit>1");
+                            JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_jadwal.id_unit>1 ORDER BY tb_unit.nama_unit");
     }else{
         $loket_administrasi = select("SELECT tb_loket_administrasi.*,tb_akun_user.email FROM tb_loket_administrasi
                               JOIN tb_akun_user ON tb_loket_administrasi.id_assigned_user = tb_akun_user.id");
@@ -98,7 +102,7 @@ $no = 1;
 
                 <!-- tabel list poli klinik -->
                 <?php if($data == 'poli klinik') :?>
-                <table id="example2" class="table table-bordered table-hover">
+                <table id="example2" class="table table-bordered table-hover" >
                   <thead>
                   <tr class="text-center">
                     <th>No.</th>
@@ -247,7 +251,7 @@ $no = 1;
       "responsive": true,
       "columnDefs": [{
                     "orderable": false,
-                    "targets": [5]
+                    "targets": [4]
                 }]
     });
   });

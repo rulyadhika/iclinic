@@ -1,10 +1,42 @@
 <?php 
-$page = $_GET['data'];
-if(isset($_GET['queue'])){
-  $queue = $_GET['queue'];
+
+//handler jika file ini diakses langsung dari url
+if(!defined('root')){
+  header('location:'.BASEURL);die;
 }
 
-$list_poli_klinik = select("SELECT id,nama_unit FROM tb_unit WHERE id>1");
+if(!defined('BASEURL')){
+  define('BASEURL',"http://localhost/web/webKlinik/");
+}
+
+
+if(isset($_GET['data'])){
+  $page = $_GET['data'];
+}else{
+  $page = null;
+}
+
+if(isset($_GET['queue'])){
+  $queue = $_GET['queue'];
+}else{
+  $queue = null;
+}
+
+//untuk list menu antrian apa saja yg akan ditampilkan
+if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala rs'){
+  $list_poli_klinik = select("SELECT id,nama_unit FROM tb_unit WHERE id>1");
+}elseif($_SESSION['role'] === 'petugas administrasi'){
+  $list_poli_klinik = [];
+
+  $id_akun_adm = $_SESSION['user_id'];
+  //cek apakah akun petugas administrasi telah diassigned kan untuk loket tertentu
+  $akun_adm_assigned = select("SELECT id FROM tb_loket_administrasi WHERE id_assigned_user = $id_akun_adm");
+}elseif(strpos($_SESSION['role'],'dokter')!==false){
+  //cek apakah user yg login dokter
+  $user_id = $_SESSION['user_id'];
+  $list_poli_klinik = select("SELECT id,nama_unit FROM tb_unit WHERE id_akun_dokter = $user_id");
+}
+
 
 ?>
 
@@ -24,7 +56,7 @@ $list_poli_klinik = select("SELECT id,nama_unit FROM tb_unit WHERE id>1");
         </div>
         <div class="info my-auto">
           <a href="" class="d-block">Dr. Ruly Adhika, S.Kom</a>
-          <small class="text-muted">Developer</small>
+          <small class="text-muted" style="text-transform: capitalize;"><?= $_SESSION['role']; ?></small>
         </div>
       </div>
 
@@ -43,6 +75,9 @@ $list_poli_klinik = select("SELECT id,nama_unit FROM tb_unit WHERE id>1");
             </a>
           </li>
 
+           
+          <?php if(strpos($_SESSION['role'],'dokter')===false) :?>
+            <!-- jika role user bukan dokter -->
           <li class="nav-item has-treeview <?= ($data=='administrasi' || $data=='poli klinik' || $data=='jadwal poli klinik')? 'menu-open' : '' ?>"> 
             <a href="#" class="nav-link <?= ($data=='administrasi' || $data=='poli klinik' || $data=='jadwal poli klinik')? 'active' : '' ?>">
               <i class="nav-icon fa fa-sitemap"></i>
@@ -83,6 +118,7 @@ $list_poli_klinik = select("SELECT id,nama_unit FROM tb_unit WHERE id>1");
               </li>
             </ul>
           </li>
+          <?php endif; ?>
 
           <li class="nav-item has-treeview <?= ($queue=='administrasi' || $queue=='poli')? 'menu-open' : '' ?>"> 
             <a href="#" class="nav-link <?= ($queue=='administrasi' || $queue=='poli')? 'active' : '' ?>">
@@ -92,13 +128,22 @@ $list_poli_klinik = select("SELECT id,nama_unit FROM tb_unit WHERE id>1");
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="queue.php?queue=administrasi&data=adm" class="nav-link <?= ($queue=='administrasi')? 'active' : '' ?>">
-                  <i class="fa fa-home nav-icon"></i>
-                  <p>Administrasi</p>
-                </a>
-              </li>
+            <?php if($_SESSION['role'] == 'petugas administrasi') :?>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <?php if(count($akun_adm_assigned)>0) :?>
+                    <a href="queue.php?queue=administrasi&data=adm" class="nav-link <?= ($queue=='administrasi')? 'active' : '' ?>">
+                      <i class="fa fa-home nav-icon"></i>
+                      <p>Administrasi</p>
+                    </a>
+                  <?php else :?>
+                    <a href="javascript:void(0)"  class="nav-link">
+                      <i class="fa fa-times nav-icon"></i>
+                      <p>Administrasi</p>
+                    </a>
+                  <?php endif; ?>
+                </li>
+            <?php endif; ?>
 
               <?php foreach($list_poli_klinik as $poli) :?>
               <li class="nav-item"> 

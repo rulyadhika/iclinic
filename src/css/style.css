@@ -1,0 +1,316 @@
+/* CPANEL */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+* {
+    /* border: 1px solid black; */
+    list-style: none;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    color: #333;
+}
+
+/* navigation bar */
+nav {
+    height: 65px;
+    position: fixed;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    width: 100%;
+    border: 1px solid  #ECEDF0 ;
+    z-index: 1;
+}
+.logo h1 {
+    font-size: 32px;
+    color: green;
+}
+nav .user {
+    display: flex;
+    align-items: center;
+}
+nav .user i{
+    font-size: 25px;
+    padding: 0 10px;
+}
+
+/* sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin-top: 65px;
+    width: 300px;
+    height: 100vh;
+    padding: 45px 0;
+    transform: translateX(0);
+    background-color: white;
+    transition: transform 0.3s ease-out;
+    border-right: 1px solid #ECEDF0;
+    z-index: 1;
+}
+.sidebar .close-icon {
+    display: none;
+}
+.sidebar li a{
+    display: inline-block;
+    padding: 20px;
+    width: 300px;
+    color: #333;
+    font-weight: 500;
+}
+.sidebar li i{
+    padding-right: 10px;
+}
+.sidebar li a:hover,
+.sidebar li a.selected
+ {
+    color: green;
+    background-color: #F6F6F6;
+}
+.sidebar.pull {
+    transform: translateX(-300px);
+}
+
+/* main */
+.main {
+    padding-top: 65px;
+    margin-left: 300px;
+    background-color: #ECEDF0;
+    transition: margin 0.3s ease-out;
+    height: 100vh;
+}
+.main .bar{
+    position: fixed;
+    height: 45px;
+    width: 100%;
+    background-color: #F6F6F6;
+    display: flex;
+    align-items: center;
+    letter-spacing: 1px;
+}
+.bar .bar-icon {
+    margin: 0 20px;
+    cursor: pointer;
+}
+
+/* content  */
+.main .content {
+    padding: 45px;
+}
+.main.pull {
+    margin-left: 0;
+}
+
+/* live widget */
+.content h2 {
+    text-align: center;
+}
+.content h3 {
+    padding-top: 20px;
+}
+.main .live {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+.main .live .widget{
+    text-align: center;
+    font-size: 14px;
+    padding: 25px;
+    background-color: white;
+    border-radius: 15px;
+}
+.widget .nomor {
+    font-size: 40px;
+    font-weight: 500;
+}
+
+/* antri */
+.content .antri-btn {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+}
+.antri-btn a {
+    display: block;
+    padding: 24px;
+    color: white;
+    background-color: green;
+    border-radius: 15px;
+}
+.antri-btn a:hover{
+    background-color: rgb(6, 150, 6);
+}
+
+/* responsive */
+@media (max-width: 768px){
+    .sidebar {
+        transform: translateX(-300px)
+    }
+    .main, .main.pull {
+        margin-left: 0;
+    }
+    .sidebar.pull {
+        transform: translateX(0);
+    }
+    .sidebar .close-icon {
+        cursor: pointer;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        top: 0;
+        right: 0;
+        height: 45px;
+        padding: 20px;
+    }
+    .main .content {
+        padding: 25px;
+        padding-top: 45px;
+    }
+    .main .live {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+    }
+    .widget .nomor{
+        font-size: 30px;
+    }
+    .main .live .widget {
+        font-size: 10px;
+        padding: 15px;
+    }
+}
+
+/* LOGIN/REGISTER*/
+nav.login {
+    padding: 0 5%;
+    height: 75px;
+}
+.tanya span {
+    font-size: 14px;
+    font-weight: 600;
+}
+.tanya a, a.span {
+    color: #333;
+    margin-left: 10px;
+    font-weight: 600;
+    border: 1px solid grey;
+    border-radius: 15px;
+    padding: 10px 15px;
+}
+.tanya a:hover {
+    color: green;
+}
+.container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px;
+    padding-top: 70px;
+}
+.banner {
+    width: 50%;
+    background-image: url("../images/banner.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.main-form{
+    width: 50%;
+    margin: auto;
+}
+.main-form.login {
+    width: auto;
+}
+.main-form a {
+    color: #4385FF;
+    font-weight: 500;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px 20px;
+    font-weight: 600;
+}
+.form-group {
+    width: 100%;
+}
+label {
+    display: block;
+    padding-bottom: 5px;
+}
+input, select {
+    /* margin-bottom: 20px; */
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    height: auto;
+    width: 100%;
+    height: 45px;
+    padding: 10px 15px;
+    border: 2px solid gray;
+    border-radius: 10px;
+    color: #333;
+}
+input:focus, select:focus {
+    border: 2px solid green;
+    border-radius: 10px;
+    outline: none;
+}
+input[type=submit]:focus {
+    background-color: rgb(1, 143, 1);
+}
+.submit-btn {
+    margin: 10px 0;
+    width: 150px;
+    cursor: pointer;
+    background-color: green;
+    border: none;
+    color: white;
+    border-radius: 15px;
+}
+.login .submit-btn{
+    width: 100%;
+}
+input[type=radio], label.pilihan{
+    width: auto;
+    display: inline;
+}
+.form-group .list {
+    height: 45px;
+    display: flex;
+    align-items: center ;
+}
+label.pilihan {
+    padding: 0;
+    margin-right: 10px;
+}
+
+@media (max-width: 768px){
+    nav.logo {
+        height: 65px;
+    }
+    .container .banner {
+        display: none;
+    }
+    .main-form {
+        width: 100%;
+    }
+    .tanya span {
+        display: none;
+    }
+}
+@media (max-width: 425px){
+    .main-form {
+        width: 100%;
+    }
+    .grid {
+        display: block;
+    }
+}

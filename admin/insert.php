@@ -1,6 +1,10 @@
 <?php 
 
 require '../utility/function.php';
+session_start();
+
+//constant agar bisa mengakses components navbar dan sidebar
+define("root",true);
 
 $data = $_GET['data'];
 
@@ -48,9 +52,6 @@ $data = $_GET['data'];
   <link rel="stylesheet" href="../src/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <!-- <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet"> -->
-  <!-- DataTables -->
-  <link rel="stylesheet" href="../src/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="../src/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <!-- Select2 -->
   <link rel="stylesheet" href="../src/plugins/select2/css/select2.min.css">
   <link rel="stylesheet" href="../src/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
@@ -340,6 +341,8 @@ $data = $_GET['data'];
   <?php endif; ?>
 
 <?php endif; ?>
+
+<!-- end of alert popup area -->
 
 <?php if($data=='jadwal poli klinik') :?>
     <script>

@@ -1,4 +1,9 @@
 <?php 
+require '../utility/function.php';
+session_start();
+
+//constant agar bisa mengakses components navbar dan sidebar
+define("root",true);
 
 ?>
 

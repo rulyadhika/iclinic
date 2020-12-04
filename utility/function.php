@@ -19,7 +19,72 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         return $rows;
     }
 
-    function insertPendaftaran($data){
+    function registerAkun($data){
+        global $conn;
+
+        $email = $data['email'];
+        $password1 = $data['password'];
+        $password2 = $data['retype_password'];
+        $user_role = 'petugas administrasi';
+
+        //cek apakah email sudah pernah terdaftar atau belum
+        $result = mysqli_query($conn,"SELECT id FROM tb_akun_user WHERE email = '$email'");
+
+        if(mysqli_num_rows($result)>0){
+            return 'email sudah pernah didaftarkan';
+        }
+
+        if(strlen($password1)<8){
+            return 'password minimal 8 karakter';
+        }
+
+        if($password1 != $password2){
+            return 'password tidak sama';
+        }
+
+        $password = password_hash($password1,PASSWORD_DEFAULT);
+
+        $query = "INSERT INTO tb_akun_user VALUES(
+            '',
+            '$email',
+            '$password',
+            '$user_role'
+        )";
+
+        if(mysqli_query($conn, $query)){
+            return mysqli_affected_rows($conn);
+        }else{
+            return "error";
+        }
+
+    }
+        
+    
+
+    function login($data){
+        global $conn;
+
+        $email = $data['email'];
+        $password = $data['password'];
+
+        $result = mysqli_query($conn,"SELECT * FROM tb_akun_user WHERE email = '$email'");
+
+        if(mysqli_num_rows($result)>0){
+           $row = mysqli_fetch_assoc($result);
+
+           if(password_verify($password,$row['password'])){
+                $_SESSION["login"] = true;
+                $_SESSION["user_id"] = $row["id"];
+                $_SESSION["role"] = $row["user_role"];
+                return $row["user_role"];
+            }
+           
+        }
+
+        return false;
+    }
+
+    function insertPendaftaranPeriksa($data){
         global $conn;
 
         $id_jadwal = $data["id_jadwal"];
@@ -59,6 +124,14 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
 
         return mysqli_affected_rows($conn);
 
+    }
+
+    function sanitize_input($data){
+
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
     }
 
     function insertAntrianAdministrasi($tanggal_periksa){
@@ -221,6 +294,39 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
             '$waktu_praktek',
             'Aktif'
         )";
+
+        mysqli_query($conn,$query);
+
+        return mysqli_affected_rows($conn);
+    }
+
+    function updatePoliKlinik($data){
+        global $conn;
+
+        $id_poli = $data['id_unit'];
+        $nama_poli = $data['nama_poli'];
+        $id_dokter = $data['dokter'];
+        $max_kuota = $data['max_kuota'];
+        $status_poli = $data['status_poli'];
+
+        $query = "UPDATE tb_unit SET nama_unit = '$nama_poli' , id_akun_dokter = $id_dokter , max_kuota = $max_kuota ,
+                  unit_status = '$status_poli' WHERE id = $id_poli";
+
+        mysqli_query($conn,$query);
+
+        return mysqli_affected_rows($conn);
+    }
+
+    function updateJadwalPoliKlinik($data){
+        global $conn;
+
+        $id_jadwal = $data['id_jadwal'];
+        $hari_praktek = $data['hari_praktek'];
+        $waktu_praktek = $data['waktu_praktek'];
+        $status_jadwal = $data['status_jadwal'];
+
+        $query = "UPDATE tb_jadwal SET hari_praktek = '$hari_praktek' , waktu_praktek = '$waktu_praktek' , 
+                  status_jadwal = '$status_jadwal' WHERE id = $id_jadwal";
 
         mysqli_query($conn,$query);
 

@@ -1,6 +1,10 @@
 <?php 
 
 require '../utility/function.php';
+session_start();
+
+//constant agar bisa mengakses components navbar dan sidebar
+define("root",true);
 
   //  handler tombol antrian berikutnya
   if(isset($_POST['next'])){
@@ -16,6 +20,7 @@ require '../utility/function.php';
     }
   }
 
+//menerima request parameter dari url
 $queue = $_GET['queue'];
 $data = $_GET['data'];
 $no = 1;
@@ -34,6 +39,10 @@ $no = 1;
                                   FROM tb_jadwal JOIN tb_unit ON tb_jadwal.id_unit = tb_unit.id JOIN tb_akun_user ON tb_unit.id_akun_dokter = tb_akun_user.id 
                                   JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_jadwal.hari_praktek = '$hari_ini' 
                                   AND tb_jadwal.status_jadwal = 'Aktif'");
+
+        //loket
+        $id_akun_adm = $_SESSION['user_id'];
+        $nomer_loket = select("SELECT no_loket FROM tb_loket_administrasi WHERE id_assigned_user = $id_akun_adm")[0]['no_loket'];
     }
 
 
@@ -69,7 +78,7 @@ $no = 1;
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark" style="text-transform: capitalize;"><?= $queue=='poli'? 'Poli '.$data :'Administrasi' ?> Loket 1</h1>
+            <h1 class="m-0 text-dark" style="text-transform: capitalize;"><?= $queue=='poli'? 'Poli '.$data :'Administrasi' ?> Loket <?= isset($nomer_loket)?$nomer_loket:'1'; ?></h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -235,21 +244,25 @@ $no = 1;
                   <div class="form-group row">
                     <label for="alamat" class="col-sm-2 col-form-label">Alamat Pasien</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="alamat" name="alamat" placeholder="Masukan Alamat Pasien" required>
+                      <textarea class="form-control" id="alamat" name="alamat" placeholder="Masukan Alamat Pasien" required></textarea>
                     </div>
                   </div>
                   <div class="form-group row">
                     <label for="id_jadwal" class="col-sm-2 col-form-label">Poli Tujuan</label>
                     <div class="col-sm-10 d-flex flex-row">
-                        <?php foreach($poli_tersedia_hari_ini as $poli) :?>
-                          <div class="form-check my-auto mr-3">
-                            <input class="form-check-input" type="radio" name="id_jadwal" id="<?= $poli['nama_unit']; ?>" value="<?= $poli['id_jadwal']; ?>" required>
-                            <label class="form-check-label" for="<?= $poli['nama_unit']; ?>">
-                              Poli <?= $poli['nama_unit']; ?> (<?= $poli['nama_dokter']; ?>) <br/> 
-                              <?= date("H:i", strtotime($poli['waktu_praktek']));  ?> WIB
-                            </label> 
-                          </div>
-                        <?php endforeach; ?>
+                        <?php if(count($poli_tersedia_hari_ini)>0) :?>
+                          <?php foreach($poli_tersedia_hari_ini as $poli) :?>
+                            <div class="form-check my-auto mr-3">
+                              <input class="form-check-input" type="radio" name="id_jadwal" id="<?= $poli['nama_unit']; ?>" value="<?= $poli['id_jadwal']; ?>" required>
+                              <label class="form-check-label" for="<?= $poli['nama_unit']; ?>">
+                                Poli <?= $poli['nama_unit']; ?> (<?= $poli['nama_dokter']; ?>) <br/> 
+                                <?= date("H:i", strtotime($poli['waktu_praktek']));  ?> WIB
+                              </label> 
+                            </div>
+                          <?php endforeach; ?>
+                        <?php else :?>
+                          <span class="d-inline-block my-auto font-italic">Tidak ada poli tersedia hari ini</span>
+                        <?php endif; ?>
                     </div>
                   </div>
                   <hr>
@@ -324,7 +337,7 @@ $no = 1;
     const angka = ["",satu,dua,tiga,empat,lima,enam,tujuh,delapan,sembilan,sepuluh,sebelas];
 
     let count;
-    let no_loket = <?= $queue=='poli'?'1':'2'; ?>; //session no loket login user 
+    let no_loket = <?= $queue=='poli'?'1':$nomer_loket; ?>; //session no loket login user 
     
     $(".next-btn").on("click",()=>{
         // next-btn handler
