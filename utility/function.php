@@ -19,48 +19,6 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         return $rows;
     }
 
-    function registerAkun($data){
-        global $conn;
-
-        $email = $data['email'];
-        $password1 = $data['password'];
-        $password2 = $data['retype_password'];
-        $user_role = 'petugas administrasi';
-
-        //cek apakah email sudah pernah terdaftar atau belum
-        $result = mysqli_query($conn,"SELECT id FROM tb_akun_user WHERE email = '$email'");
-
-        if(mysqli_num_rows($result)>0){
-            return 'email sudah pernah didaftarkan';
-        }
-
-        if(strlen($password1)<8){
-            return 'password minimal 8 karakter';
-        }
-
-        if($password1 != $password2){
-            return 'password tidak sama';
-        }
-
-        $password = password_hash($password1,PASSWORD_DEFAULT);
-
-        $query = "INSERT INTO tb_akun_user VALUES(
-            '',
-            '$email',
-            '$password',
-            '$user_role'
-        )";
-
-        if(mysqli_query($conn, $query)){
-            return mysqli_affected_rows($conn);
-        }else{
-            return "error";
-        }
-
-    }
-        
-    
-
     function login($data){
         global $conn;
 
@@ -73,8 +31,20 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
            $row = mysqli_fetch_assoc($result);
 
            if(password_verify($password,$row['password'])){
+                $user_id = $row["id"];
+                $user_name = select("SELECT tb_biodata_user.nama FROM tb_akun_user JOIN tb_biodata_user 
+                                        ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_akun_user.id = $user_id")[0]['nama'];
+                $user_name = explode(" ", $user_name);
+
+                if(count($user_name)>0){
+                    $user_name = $user_name[0]." ".$user_name[1];
+                }else{
+                    $user_name = $user_name[0];
+                }
+
+                $_SESSION['user_name'] = $user_name;
                 $_SESSION["login"] = true;
-                $_SESSION["user_id"] = $row["id"];
+                $_SESSION["user_id"] = $user_id;
                 $_SESSION["role"] = $row["user_role"];
                 return $row["user_role"];
             }
@@ -84,31 +54,141 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         return false;
     }
 
-    function insertPendaftaranPeriksa($data){
+    function registerAkun($data){
         global $conn;
+
+        $email = $data['email'];
+        $password = $data['password'];
+        $user_role = 'pasien';
+
+        //cek apakah email sudah pernah terdaftar atau belum
+        $result = mysqli_query($conn,"SELECT id FROM tb_akun_user WHERE email = '$email'");
+
+        if(mysqli_num_rows($result)>0){
+            return 'email sudah pernah didaftarkan';
+        }
+
+        if(strlen($password)<8){
+            return 'password minimal 8 karakter';
+        }
+
+        $password = password_hash($password,PASSWORD_DEFAULT);
+
+        $query = "INSERT INTO tb_akun_user VALUES(
+            '',
+            '$email',
+            '$password',
+            '$user_role'
+        )";
+
+        if(mysqli_query($conn, $query)){
+            $id_akun = mysqli_insert_id($conn);
+            return insertBiodataUser($data,$id_akun);
+        }else{
+            return "error";
+        }
+
+    }
+
+    function insertBiodataUser($data,$id_akun){
+        global $conn;
+
+        $nama = $data['nama_pasien'];
+        $nik = $data['nik_pasien'];
+        $jenis_kelamin = $data['jenis_kelamin'];
+        $tanggal_lahir = $data['tanggal_lahir'];
+        $gol_darah = $data['gol_darah'];
+        $no_hp = $data['no_hp'];
+        $alamat = $data['alamat'];
+        $no_bpjs = $data['nomor_bpjs'];
+
+        //jika pasien tidak memiliki nomor bpjs
+        if(strlen($no_bpjs)==0){
+            $no_bpjs = "NULL";
+        }
+
+        $query = "INSERT INTO tb_biodata_user VALUES(
+            '',
+            $id_akun,
+            '$nama',
+            $nik,
+            '$jenis_kelamin',
+            '$tanggal_lahir',
+            '$gol_darah',
+            $no_hp,
+            '$alamat',
+            $no_bpjs
+        )";
+
+        mysqli_query($conn,$query);
+
+        return mysqli_affected_rows($conn);
+
+
+    }
+
+    function insertPendaftaranPeriksaOffline($data){
+        global $conn;
+
+        $no_bpjs = $data['nomor_bpjs'];
+        $nik_pasien = $data['nik_pasien'];
+        $nama_pasien = $data['nama_pasien'];
+        $tanggal_lahir = $data['tanggal_lahir'];
+        $jenis_kelamin = $data['jenis_kelamin'];
+        $gol_darah = $data['gol_darah'];
+        $alamat = $data['alamat'];
+
+        //jika pasien tidak memiliki nomor bpjs
+        if(strlen($no_bpjs)==0){
+            $no_bpjs = "NULL";
+        }
 
         $id_jadwal = $data["id_jadwal"];
         $kd_pendaftaran = uniqid('',true);
-
- 
-        //pendaftaran secara offline
-        if(isset($data['tipe_pendaftaran'])){
-            if($data['tipe_pendaftaran'] == 'offline'){
-                $tanggal_periksa = date("Y-m-d",time());
-                $verifikasi_pendaftaran = "Sudah Verifikasi";
-            }
-        }
-        //pendaftaran secara online
-        else{
-            $id_user = 5;   //session id login
-            $tanggal_periksa = date("Y-m-d",$data['date']);
-            $verifikasi_pendaftaran = "Belum Verifikasi";
-        }
+        $tanggal_periksa = date("Y-m-d",time());
+        $verifikasi_pendaftaran = "Sudah Verifikasi";
 
         $no_antrian_administrasi = insertAntrianAdministrasi($tanggal_periksa);
         $no_antrian_poli = insertAntrianPoli($tanggal_periksa,$id_jadwal);
 
-        $query = "INSERT INTO tb_pendaftaran VALUES(
+        $query = "INSERT INTO tb_pendaftaran_offline VALUES(
+            '',
+            $id_jadwal,
+            $no_antrian_administrasi,
+            $no_antrian_poli,
+            '$tanggal_periksa',
+            $nik_pasien,
+            '$nama_pasien',
+            '$tanggal_lahir',
+            '$jenis_kelamin',
+            '$gol_darah',
+            '$alamat',
+            $no_bpjs,
+            '$kd_pendaftaran',
+            '$verifikasi_pendaftaran'
+        )";
+
+        mysqli_query($conn,$query);
+
+        return mysqli_affected_rows($conn);
+
+    }
+        
+
+    function insertPendaftaranPeriksaOnline($data){
+        global $conn;
+
+        $id_jadwal = $data["poli"];
+        $kd_pendaftaran = uniqid('',true);
+        $id_user = $_SESSION['user_id']; 
+        $tanggal_periksa = date("Y-m-d",$data['tanggal_periksa']);
+        $jenis_pembiayaan = $data['pembiayaan'];
+        $verifikasi_pendaftaran = "Belum Verifikasi";
+        
+        $no_antrian_administrasi = insertAntrianAdministrasi($tanggal_periksa);
+        $no_antrian_poli = insertAntrianPoli($tanggal_periksa,$id_jadwal);
+
+        $query = "INSERT INTO tb_pendaftaran_online VALUES(
             '',
             $id_user,
             $id_jadwal,
@@ -116,13 +196,15 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
             $no_antrian_poli,
             '$tanggal_periksa',
             '$kd_pendaftaran',
-            '',
+            '$jenis_pembiayaan',
             '$verifikasi_pendaftaran'
         )";
 
-        mysqli_query($conn,$query);
+        if(mysqli_query($conn,$query)){
+            $last_id = mysqli_insert_id($conn);
+            return [mysqli_affected_rows($conn),$last_id];
+        };
 
-        return mysqli_affected_rows($conn);
 
     }
 

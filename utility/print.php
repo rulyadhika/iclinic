@@ -1,0 +1,316 @@
+<?php 
+session_start();
+include "./function.php";
+
+  if(!isset($_GET['reg'])){
+    header("Location:../index.php");die;
+  }else{
+
+    if($_GET['reg']=='online'){
+
+      if(!isset($_SESSION['id_pendaftaran'])){
+        header("location:../index.php");die;
+      }else{
+        $id_pendaftaran = $_SESSION['id_pendaftaran'];
+
+        $data_pendaftaran = select("SELECT tb_unit.nama_unit, tb_pendaftaran_online.*,tb_akun_user.email, tb_biodata_user.* 
+                            FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit JOIN tb_pendaftaran_online 
+                            ON tb_jadwal.id = tb_pendaftaran_online.id_jadwal JOIN tb_akun_user
+                            ON tb_pendaftaran_online.id_user = tb_akun_user.id JOIN tb_biodata_user 
+                            ON tb_akun_user.id = tb_biodata_user.id_akun 
+                            WHERE tb_pendaftaran_online.id = $id_pendaftaran")[0];
+      }
+
+    }else{
+
+    }
+  }
+
+
+?>
+
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+            integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+            integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+            crossorigin="anonymous" />
+
+
+        <title>Surat Pendaftaran Rawat Jalan Pasien - I Clinic Unsoed</title>
+
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+            body{
+                font-family: 'Poppins', sans-serif
+            }
+
+            .thermal-printer-ticket{
+              font-size: 12px;
+              font-family: 'Times New Roman';
+            }
+
+            td.value{
+                width: 70px;
+                max-width: 70px;
+                word-break: break-all;
+            }
+
+            td.data{
+                width: 85px;
+                max-width: 85px;
+                font-weight: bold;
+            }
+
+            .ticket {
+                width: 155px;
+                max-width: 155px;
+            }
+
+            img {
+                padding: 10px;
+                max-width: inherit;
+                width: inherit;
+            }
+
+            @media print{
+                #print{
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="wrapper">
+
+            <?php if($_GET['reg']=='online')  :?>
+              <!-- Main content -->
+              <section class="invoice">
+                  <!-- title row -->
+                  <div class="row">
+                      <div class="col-12">
+                          <h2 class="page-header">
+                              <i class="fas fa-globe"></i> I-Clinic Unsoed
+                              <small class="float-right">Date: <?= strftime("%d/%m/%Y", time()); ?></small>
+                          </h2>
+                      </div>
+                      <!-- /.col -->
+                  </div>
+                  <!-- info row -->
+                  <div class="row header-info mt-3">
+                      <div class="col-12 text-center">
+                          <h3>Surat Pendaftaran Rawat Jalan Pasien</h3>
+                          <h5>I-Clinic Universitas Jenderal Soedirman</h5>
+                          <h6>Jl. Raya Mayjen Sungkono No.KM 5, Dusun 2, Blater, Kec. Kalimanah, Kabupaten Purbalingga, Jawa Tengah 53371</h6>
+                      </div>
+                      <div class="col-12 d-flex justify-content-center">
+                          <div class="mx-2">
+                              <i class="fa fa-envelope"></i>
+                              <span>i-clinic@unsoed.ac.id</span>
+                          </div>
+                          <div class="mx-2">
+                              <i class="fa fa-phone"></i>
+                              <span>+6281 2000 3000</span>
+                          </div>
+                          <div class="mx-2">
+                              <i class="fa fa-map-marker"></i>
+                              <span>Purbalingga, Indonesia</span>
+                          </div>
+                      </div>
+                  </div>
+                  <!-- /.row -->
+
+                  <!-- Table row -->
+                  <div class="row mt-4">
+                      <div class="col-12 table-responsive">
+                          <table class="table border-bottom">
+                              <thead class="thead-light text-center">
+                                <tr>
+                                  <th scope="col" colspan="2">Data Pendaftaran</th>
+                                  <th scope="col"></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr class="font-weight-bold">
+                                  <td style="width:250px;">No. Antrian Administrasi</td>
+                                  <td>: <?= $data_pendaftaran['no_antrian_administrasi']; ?> 
+                                </tr>
+                                <tr class="font-weight-bold">
+                                  <td>Poli Tujuan </td>
+                                  <td>: Poli <?= $data_pendaftaran['nama_unit']; ?> </td> 
+                                </tr>
+                                <tr class="font-weight-bold">
+                                  <td >No. Antrian Poli </td>
+                                  <td>: <?= $data_pendaftaran['no_antrian_poli']; ?> </td> 
+                                </tr>
+                                <tr class="font-weight-bold">
+                                  <td >Tanggal Periksa </td>
+                                  <td>: <?= strftime("%A, %d %B %Y", strtotime($data_pendaftaran['tanggal_periksa'])); ?> </td>
+                                </tr>
+            
+                                <thead class="thead-light text-center">
+                                  <tr>
+                                    <th scope="col" colspan="2">Data Pasien</th>
+                                    <th scope="col"></th>
+                                  </tr>
+                                </thead>
+            
+                                <tr class="font-weight-bold">
+                                  <td>Jenis Pembiayaan </td>
+                                  <td class="<?= $data_pendaftaran['jenis_pembiayaan']=="BPJS"?'text-success':'text-primary'; ?>">: <?= $data_pendaftaran['jenis_pembiayaan']; ?> </td> </td>
+                                </tr>
+                                <?php if($data_pendaftaran['jenis_pembiayaan']=="BPJS") :?>
+                                  <tr class="font-weight-bold">
+                                    <td >Nomor BPJS </td>
+                                    <td>: <?= $data_pendaftaran['no_bpjs']; ?> </td>
+                                  </tr>
+                                <?php endif; ?>
+                                <tr>
+                                  <td class="font-weight-bold">NIK </td>
+                                  <td>: <?= $data_pendaftaran['nik']; ?> </td>
+                                </tr>
+                                <tr>
+                                  <td class="font-weight-bold">Nama Pasien </td>
+                                  <td>: <?= $data_pendaftaran['nama']; ?> </td>
+                                </tr>
+                                <tr>
+                                  <td class="font-weight-bold">Tanggal Lahir </td>
+                                  <td>: <?= strftime("%d %B %Y", strtotime($data_pendaftaran['tanggal_lahir'])); ?> </td>
+                                </tr>
+                                <tr>
+                                  <td class="font-weight-bold">Jenis Kelamin </td>
+                                  <td>: <?= $data_pendaftaran['jenis_kelamin']; ?> </td>
+                                </tr>
+                                <tr>
+                                  <td class="font-weight-bold">Gol Darah </td>
+                                  <td>: <?= $data_pendaftaran['gol_darah']; ?> </td>
+                                </tr>
+                                <tr>
+                                  <td class="font-weight-bold">Alamat </td>
+                                  <td>: <?= $data_pendaftaran['alamat']; ?> </td>
+                                </tr>
+                                <tr>
+                                  <td class="font-weight-bold">No.Hp </td>
+                                  <td>: 0<?= $data_pendaftaran['no_hp']; ?> </td>
+                                </tr>
+                                <tr>
+                                  <td class="font-weight-bold">Email </td>
+                                  <td>: <?= $data_pendaftaran['email']; ?> </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                      </div>
+                      <!-- /.col -->
+                  </div>
+                  <!-- /.row -->
+
+                  <div class="row">
+                      <!-- accepted payments column -->
+                      <div class="col-6">
+                          <p class="lead">Syarat - syarat:</p>
+                          <p  style="margin-top: 10px;" class="mb-1">
+                              Silahkan bawa surat ini pada saat anda berkunjung ke klinik disertai dengan berkas - berkas lainnya untuk dilakukan verifikasi pendaftaran. Berkas - berkas yang diperlukan :
+                          </p>
+                          <div >
+                              <p class="mb-0">
+                                  Pasien Umum : 
+                              </p>
+                              <ul class="mb-1">
+                                  <li>KTP atau KK</li>
+                              </ul>
+                          </div>
+                          <div>
+                              <p class="mb-0">
+                                  Pasien BPJS : 
+                              </p>
+                              <ul>
+                                  <li>Kartu JKN - KIS / BPJS / Askes Asli / KIS Digital</li>
+                                  <li>Kartu Identitas(KK / KTP / SIM)</li>
+                                  <li>Bagi pasien anak menunjukkan KK / KTP / KTP Orang tua</li>
+                              </ul>
+                          </div>
+                      </div>
+                      <!-- /.col -->
+                      <div class="col-6">
+                          <p class="lead text-center">Tunjukan kode qr dibawah ini kepada petugas</p>
+                          <div class="text-center mt-4" >
+                              <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=<?= $data_pendaftaran['kd_pendaftaran']; ?> </td>&color=3d3d3d" alt="">
+                          </div>
+                      </div>
+                      <div class="col-12 mt-3 font-italic text-danger">
+                          <p>*Dimohon untuk melakukan proses verifikasi pendaftaran di klinik sebelum jam 12.00 siang dihari yang sama dengan jadwal periksa anda.</p>
+                      </div>
+                      <!-- /.col -->
+                  </div>
+                  <!-- /.row -->
+              </section>
+              <!-- /.content -->
+            <?php else :?>
+              <section class="thermal-printer-ticket">
+                <div class="ticket">
+                  <p class="text-center mb-0">Nomor Antrian Poli
+                      <br>I-Clinic Unsoed
+                  </p>
+                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=Example" alt="">
+                  <p class="text-center mb-0">Tanggal : 25/12/2020</p>
+                  <table class="mt-2">
+                    <tbody>
+                        <tr>
+                          <td class="data">Nomor Antrian</td>
+                          <td class="value">: 2</td>
+                        </tr>
+                        <tr>
+                            <td class="data">Nama</td>
+                            <td class="value">: Ruly Adhika</td>
+                        </tr>
+                        <tr>
+                            <td class="data">Poli Tujuan</td>
+                            <td class="value">: Gigi</td>
+                        </tr>
+                    </tbody>
+                  </table>
+                  <p class="text-center mt-2">Nomor antrian berlaku sesuai dengan tanggal dikeluarkan
+                </div>
+              </section>
+            <?php endif; ?>
+        </div>
+        <!-- thanks to parzibyte.me/blog -->
+        <!-- ./wrapper -->
+
+        <button id='print'>Cetak PDF</button>
+
+        <!-- Option 2: jQuery, Popper.js, and Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+            integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
+            integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous">
+        </script>
+
+
+        <script type="text/javascript">
+            window.onload = ()=>{
+              window.print();
+            }
+
+            $('#print').click(function () {
+                window.print();
+            });
+        </script>
+    </body>
+
+
+</html>

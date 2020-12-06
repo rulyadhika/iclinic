@@ -12,7 +12,6 @@ if(isset($_POST['login'])){
 }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +27,7 @@ if(isset($_POST['login'])){
         </div>
         <div class="tanya">
             <span>Belum Punya Akun?</span>
-            <a href="register.html">Daftar<span> Sekarang</span></a>
+            <a href="register.php"><span>Daftar Sekarang</span></a>
         </div>
     </nav>
     <div class="container">
@@ -36,7 +35,7 @@ if(isset($_POST['login'])){
         <div class="main-form login">
             <h2>Login Reservasi Online</h2>
             <form action="" method="POST">
-                <div class="grid">
+                <div class="grid-form">
                     <div class="form-group">
                         <label for="email">Alamat Email</label>
                         <input type="email" name="email" placeholder="Masukkan Email Anda" required>
@@ -47,9 +46,27 @@ if(isset($_POST['login'])){
                     </div>
                 </div>
                 <input type="submit" class="submit-btn" value="Login" name="login">
-                <a href="#">Lupa Password?</a>
+                <a href="cpanel.html">Lupa Password?</a>
             </form>
         </div>
     </div>
 </body>
+
+<!-- sweetalert -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+<!-- alert popUp area -->
+<?php if(isset($result)):?>
+<script>
+    <?php if($result==false) :?>
+        swal('Gagal!', 'Email / Password salah! Silahkan periksa kembali', 'error')
+        .then((value) => {
+            window.location.href = 'login.php';
+        });
+    <?php endif; ?>
+</script> 
+<?php endif; ?>
+<!-- end of alert popup area -->
+    
 </html>

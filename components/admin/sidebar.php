@@ -55,7 +55,7 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala rs'){
           <img src="https://ui-avatars.com/api/?name=Ruly Adhika&size=64&background=bdc3c7&color=00000&format=svg" class="img-circle elevation-2" alt="">
         </div>
         <div class="info my-auto">
-          <a href="" class="d-block">Dr. Ruly Adhika, S.Kom</a>
+          <a href="" class="d-block"><?= $_SESSION['user_name']; ?></a>
           <small class="text-muted" style="text-transform: capitalize;"><?= $_SESSION['role']; ?></small>
         </div>
       </div>
@@ -128,8 +128,8 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala rs'){
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
-            <?php if($_SESSION['role'] == 'petugas administrasi') :?>
-              <ul class="nav nav-treeview">
+            <ul class="nav nav-treeview">
+              <?php if($_SESSION['role'] == 'petugas administrasi') :?>
                 <li class="nav-item">
                   <?php if(count($akun_adm_assigned)>0) :?>
                     <a href="queue.php?queue=administrasi&data=adm" class="nav-link <?= ($queue=='administrasi')? 'active' : '' ?>">

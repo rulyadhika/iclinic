@@ -3,6 +3,11 @@
 require '../utility/function.php';
 session_start();
 
+  //submit pendaftaran offline handler
+  if(isset($_POST['tambah_pendaftaran'])){
+    $result = insertPendaftaranPeriksaOffline($_POST);
+  }
+
 //constant agar bisa mengakses components navbar dan sidebar
 define("root",true);
 
@@ -12,7 +17,7 @@ define("root",true);
   }elseif(isset($_POST['cek'])){
     //handler tombol cek data pasien
     $qr_code = $_POST['qr_code'];
-    $data_pasien = select("SELECT * FROM tb_pendaftaran WHERE kd_pendaftaran = '$qr_code'");
+    $data_pasien = select("SELECT * FROM tb_pendaftaran_online WHERE kd_pendaftaran = '$qr_code'");
     if(count($data_pasien)>0){
       echo json_encode($data_pasien[0]);die;
     }else{
@@ -25,6 +30,7 @@ $queue = $_GET['queue'];
 $data = $_GET['data'];
 $no = 1;
 
+    //data handler
     if($queue == 'poli'){
         $id_unit = $_GET['id'];
         $nomor_antrian_terakhir = select("SELECT nomor_antrian FROM tb_counter WHERE id_unit = $id_unit")[0]['nomor_antrian'];
@@ -180,17 +186,16 @@ $no = 1;
               </div>
               <div class="card-body"> 
                 <form action="" method="POST">
-                  <input type="text" name="tipe_pendaftaran" value="offline">
                   <div class="form-group row">
                     <label for="nomor_bpjs" class="col-sm-2 col-form-label">Nomor BPJS</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="nomor_bpjs" name="nomor_bpjs" placeholder="Masukan Nomor BPJS ( jika pasien umum silahkan isi dengan '-' tanpa tanda petik )" required>
+                      <input type="number" class="form-control" id="nomor_bpjs" name="nomor_bpjs" placeholder="Masukan Nomor BPJS ( kosongkan bila tidak ada )">
                     </div>
                   </div>
                   <div class="form-group row">
                     <label for="nik_pasien" class="col-sm-2 col-form-label">NIK Pasien</label>
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="nik_pasien" name="nik_pasien" placeholder="Masukan NIK Pasien" required>
+                      <input type="number" class="form-control" id="nik_pasien" name="nik_pasien" placeholder="Masukan NIK Pasien" required>
                     </div>
                   </div>
                   <div class="form-group row">
@@ -217,12 +222,12 @@ $no = 1;
                     <label class="col-sm-2 col-form-label">Jenis Kelamin </label>
                     <div class="col-sm-10 d-flex flex-row">
                         <div class="form-check my-auto mx-2">
-                          <input class="form-check-input" type="radio" name="jenis_kelamin" id="pria" value="pria" required>
-                          <label class="form-check-label" for="pria">Pria</label>
+                          <input class="form-check-input" type="radio" name="jenis_kelamin" id="laki - laki" value="laki - laki" required>
+                          <label class="form-check-label" for="laki - laki">Laki - laki</label>
                         </div>
                         <div class="form-check my-auto mx-2">
-                          <input class="form-check-input" type="radio" name="jenis_kelamin" id="wanita" value="wanita">
-                          <label class="form-check-label" for="wanita">Wanita</label>
+                          <input class="form-check-input" type="radio" name="jenis_kelamin" id="perempuan" value="perempuan">
+                          <label class="form-check-label" for="perempuan">Perempuan</label>
                         </div>
                     </div>
                   </div>
@@ -267,7 +272,7 @@ $no = 1;
                   </div>
                   <hr>
                   <div class="d-flex justify-content-end mt-3">
-                    <button class="btn btn-info" type="submit">Tambah Pendaftaran</button>
+                    <button class="btn btn-info" type="submit" name="tambah_pendaftaran">Tambah Pendaftaran</button>
                   </div>
                 </form>
               </div>
@@ -314,6 +319,39 @@ $no = 1;
 <script src="../src/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="../src/js/adminlte.min.js"></script>
+<!-- sweetalert -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<!-- alert popUp area -->
+<?php if(isset($result)):?>
+  <!-- popup alert untuk registrasi pendaftaran pasien -->
+  <?php if($_GET['queue']=='administrasi') :?>
+      <script>
+          <?php if($result==(1)) :?>
+              swal({
+                    title: "Berhasil!",
+                    text: "Data Pendaftaran Berhasil Ditambahkan",
+                    icon: "success",
+                    closeOnEsc: false,
+                    closeOnClickOutside: false,
+                    button: "Cetak Pdf",
+                  })
+              .then((value) => {
+                  window.open("https://www.w3schools.com");
+              })
+              .then(()=>{
+                window.location.href = 'queue.php?queue=administrasi&data=adm';
+              });
+          <?php else :?>
+              swal('Error!', 'Data Pendaftaran Gagal Ditambahkan', 'error')
+              .then((value) => {
+                window.location.href = 'queue.php?queue=administrasi&data=adm';
+              });
+          <?php endif; ?>
+      </script> 
+  <?php endif; ?>
+<?php endif; ?>
+<!-- end of alert popup area -->
 
 <script>
     const sound_in = new Audio('../src/audio/antrian/in.wav');
@@ -464,7 +502,7 @@ $no = 1;
                     </thead>
 
                     <tr class="font-weight-bold">
-                      <td>Penjamin Pasien </td>
+                      <td>Jenis Pembiayaan </td>
                       <td class="text-success">: BPJS </td>
                     </tr>
                     <tr class="font-weight-bold">
