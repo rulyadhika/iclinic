@@ -2,14 +2,24 @@
 
 require '../utility/function.php';
 session_start();
-
-  //submit pendaftaran offline handler
-  if(isset($_POST['tambah_pendaftaran'])){
-    $result = insertPendaftaranPeriksaOffline($_POST);
-  }
-
 //constant agar bisa mengakses components navbar dan sidebar
 define("root",true);
+
+    //submit pendaftaran offline handler
+    if(isset($_POST['tambah_pendaftaran'])){
+      $result = insertPendaftaranPeriksaOffline($_POST);
+    }
+
+    //handler verifikasi pendaftaran pasien
+    if(isset($_POST['verifikasi'])){
+      $update_verifikasi = verifikasiPendaftaranOnline($_POST);
+      if($update_verifikasi>0){
+         echo json_encode(['status'=>'berhasil']);die;
+      }else{
+        echo json_encode(['status'=>'gagal']);die;
+      }
+    }
+
 
   //  handler tombol antrian berikutnya
   if(isset($_POST['next'])){
@@ -17,7 +27,11 @@ define("root",true);
   }elseif(isset($_POST['cek'])){
     //handler tombol cek data pasien
     $qr_code = $_POST['qr_code'];
-    $data_pasien = select("SELECT * FROM tb_pendaftaran_online WHERE kd_pendaftaran = '$qr_code'");
+    $data_pasien = select("SELECT tb_unit.nama_unit, tb_pendaftaran_online.*,tb_pendaftaran_online.id as id_pendaftaran,
+                          tb_akun_user.email, tb_biodata_user.* FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit 
+                          JOIN tb_pendaftaran_online ON tb_jadwal.id = tb_pendaftaran_online.id_jadwal JOIN tb_akun_user
+                          ON tb_pendaftaran_online.id_user = tb_akun_user.id JOIN tb_biodata_user 
+                          ON tb_akun_user.id = tb_biodata_user.id_akun WHERE kd_pendaftaran = '$qr_code'");
     if(count($data_pasien)>0){
       echo json_encode($data_pasien[0]);die;
     }else{
@@ -106,10 +120,10 @@ $no = 1;
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-8">
-            <div class="card ">
+            <div class="card verifikasi-pendaftaran-box">
               <div class="card-header">
                 <div class="d-flex justify-content-between ">
-                  <h5 class="my-auto"><?= $queue=='poli'?'Cek Kode Pendaftaran':'Verifikasi Pendaftaran'; ?></h5>
+                  <h5 class="my-auto"><?= $queue=='poli'?'Cek Kode Pendaftaran':'Verifikasi Pendaftaran Online'; ?></h5>
                 </div>
               </div>
               <div class="card-body">
@@ -123,6 +137,7 @@ $no = 1;
                   </div>
                 </div>
 
+                <!-- data pasien akan ditampilkan disini ketika digenerate via js-->
                 <div class="table-data-pasien">
                   
                 </div>
@@ -322,11 +337,12 @@ $no = 1;
 <!-- sweetalert -->
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
-<!-- alert popUp area -->
-<?php if(isset($result)):?>
+<?php if($_GET['queue']=='administrasi') :?>
+  <!-- alert popUp area -->
   <!-- popup alert untuk registrasi pendaftaran pasien -->
-  <?php if($_GET['queue']=='administrasi') :?>
+  <?php if(isset($result)):?>
       <script>
+          //alert untuk pendaftaran pasien offline
           <?php if($result==(1)) :?>
               swal({
                     title: "Berhasil!",
@@ -350,8 +366,36 @@ $no = 1;
           <?php endif; ?>
       </script> 
   <?php endif; ?>
+  <!-- end of alert popup area -->
+
+
+
+  <!-- update verifikasi pendaftaran pasien handler-->
+    
+  <script>
+    $(".verifikasi-pendaftaran-box").on("click",function(e){
+      if(e.target.classList.contains("verifikasiPasienBtn")){
+        $.ajax({
+        url: "queue.php?queue=administrasi&data=adm",
+        type : "POST",
+        data : { 
+                verifikasi : true,
+                id_pendaftaran : e.target.dataset.id,
+            },
+        dataType : "JSON",
+        success: function(result){
+            if(result.status == "berhasil"){
+              swal('Berhasil!', 'Data Pasien Berhasil Diverifikasi', 'success');
+              $(".cek-btn").click();
+            }else{
+              swal('Gagal!', 'Data Pasien Gagal Diverifikasi', 'error');
+            }
+        }});
+      }
+    })
+  </script>
+  
 <?php endif; ?>
-<!-- end of alert popup area -->
 
 <script>
     const sound_in = new Audio('../src/audio/antrian/in.wav');
@@ -378,7 +422,7 @@ $no = 1;
     let no_loket = <?= $queue=='poli'?'1':$nomer_loket; ?>; //session no loket login user 
     
     $(".next-btn").on("click",()=>{
-        // next-btn handler
+        // next-btn antrian handler
         $.ajax({
         url: "queue.php",
         type : "POST",
@@ -458,7 +502,6 @@ $no = 1;
       dataType: "json",
       success: function(result){
           data_pasien = result;
-          console.log(data_pasien);
 
           if(data_pasien.hasOwnProperty('error')){
             $(".table-data-pasien").html(
@@ -478,12 +521,16 @@ $no = 1;
                   </thead>
                   <tbody>
                     <tr class="font-weight-bold">
-                      <td style="width:200px;">No. Antrian </td>
+                      <td style="width:250px;">No. Antrian Administrasi</td>
                       <td>: ${data_pasien.no_antrian_administrasi} </td>
                     </tr>
                     <tr class="font-weight-bold">
                       <td>Poli Tujuan </td>
-                      <td>: </td>
+                      <td>: Poli ${data_pasien.nama_unit} </td>
+                    </tr>
+                    <tr class="font-weight-bold">
+                      <td>No. Antrian Poli</td>
+                      <td>: ${data_pasien.no_antrian_poli} </td>
                     </tr>
                     <tr class="font-weight-bold">
                       <td >Tanggal Periksa </td>
@@ -503,48 +550,49 @@ $no = 1;
 
                     <tr class="font-weight-bold">
                       <td>Jenis Pembiayaan </td>
-                      <td class="text-success">: BPJS </td>
+                      <td class="${data_pasien.jenis_pembiayaan=="BPJS"?'text-success':'text-primary'}">: ${data_pasien.jenis_pembiayaan} </td>
                     </tr>
                     <tr class="font-weight-bold">
                       <td >Nomor BPJS </td>
-                      <td>: 0123412312312 </td>
+                      <td>: ${data_pasien.jenis_pembiayaan=="BPJS"?data_pasien.no_bpjs:'-'} </td>
                     </tr>
                     <tr>
                       <td class="font-weight-bold">NIK </td>
-                      <td>: </td>
+                      <td>: ${data_pasien.nik}</td>
                     </tr>
                     <tr>
                       <td class="font-weight-bold">Nama Pasien </td>
-                      <td>: </td>
+                      <td>: ${data_pasien.nama}</td>
                     </tr>
                     <tr>
-                      <td class="font-weight-bold">TTL </td>
-                      <td>: </td>
+                      <td class="font-weight-bold">Tanggal Lahir </td>
+                      <td>: ${new Date(data_pasien.tanggal_lahir).toLocaleDateString("id",{ year: 'numeric', month: 'numeric', day: 'numeric' })}</td>
                     </tr>
                     <tr>
                       <td class="font-weight-bold">Jenis Kelamin </td>
-                      <td>: </td>
-                    </tr>
-                    <tr>
-                      <td class="font-weight-bold">Agama </td>
-                      <td>: </td>
+                      <td>: ${data_pasien.jenis_kelamin}</td>
                     </tr>
                     <tr>
                       <td class="font-weight-bold">Gol Darah </td>
-                      <td>: </td>
+                      <td>: ${data_pasien.gol_darah}</td>
                     </tr>
                     <tr>
+                        <td class="font-weight-bold">Alamat </td>
+                        <td>: ${data_pasien.alamat} </td>
+                      </tr>
+                    <tr>
                       <td class="font-weight-bold">No.Hp </td>
-                      <td>: </td>
+                      <td>: 0${data_pasien.no_hp}</td>
                     </tr>
                     <tr>
                       <td class="font-weight-bold">Email </td>
-                      <td>: </td>
+                      <td>: ${data_pasien.email}</td>
                     </tr>
                   </tbody>
                 </table>
                 <div class="d-flex justify-content-end mt-3">
-                  <button class="btn btn-info" ${data_pasien.verifikasi_administrasi=='Belum Verifikasi'?'':'disabled'}>Verifikasi Pasien</button>
+                  <span class="inline-block my-auto mr-3 font-italic text-success">${data_pasien.verifikasi_administrasi=='Belum Verifikasi'?'':'Pasien sudah terverifikasi'}</span>
+                  <button class="btn btn-info verifikasiPasienBtn" data-id="${data_pasien.id_pendaftaran}" ${data_pasien.verifikasi_administrasi=='Belum Verifikasi'?'':'disabled'}>Verifikasi Pasien</button>
                 </div>
               `
             );

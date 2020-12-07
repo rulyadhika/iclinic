@@ -415,5 +415,16 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         return mysqli_affected_rows($conn);
     }
 
+    function verifikasiPendaftaranOnline($data){
+        global $conn;
+
+        $id_pendaftaran = $data['id_pendaftaran'];
+
+        mysqli_query($conn,"UPDATE tb_pendaftaran_online SET verifikasi_administrasi = 'Terverifikasi' 
+                    WHERE id = $id_pendaftaran");
+
+        return mysqli_affected_rows($conn);
+    }
+
 
 ?>
