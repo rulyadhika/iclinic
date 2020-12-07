@@ -76,7 +76,7 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala rs'){
           </li>
 
            
-          <?php if(strpos($_SESSION['role'],'dokter')===false) :?>
+          <?php if(strpos($_SESSION['role'],'dokter')===false) :?> 
             <!-- jika role user bukan dokter -->
           <li class="nav-item has-treeview <?= ($data=='administrasi' || $data=='poli klinik' || $data=='jadwal poli klinik')? 'menu-open' : '' ?>"> 
             <a href="#" class="nav-link <?= ($data=='administrasi' || $data=='poli klinik' || $data=='jadwal poli klinik')? 'active' : '' ?>">
@@ -117,6 +117,17 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala rs'){
                 </ul>
               </li>
             </ul>
+          </li>
+
+          <!-- kelola user -->
+
+          <li class="nav-item"> 
+            <a href="list.php?data=user" class="nav-link <?= ($data=='user')? 'active' : '' ?>">
+              <i class="nav-icon fa fa-user"></i>
+              <p>
+                Kelola User
+              </p>
+            </a>
           </li>
           <?php endif; ?>
 

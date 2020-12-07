@@ -13,8 +13,10 @@ $data = $_GET['data'];
     if(isset($_POST['submit'])){
       if($data == 'poli klinik'){
         $result = insertPoliKlinik($_POST);
-      }else if($data == 'jadwal poli klinik'){
+      }elseif($data == 'jadwal poli klinik'){
         $result = insertJadwalPoliKlinik($_POST);
+      }elseif($data == 'user'){
+        $result = registerAkun($_POST);
       }else{
         $result = insertLoketAdministrasi($_POST);
       }
@@ -71,7 +73,13 @@ $data = $_GET['data'];
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark"><?= $data=='poli klinik'? 'Poli Klinik':'Administrasi' ?></h1>
+              <?php if($data=='poli klinik') :?>
+                <h1 class="m-0 text-dark">Poli Klinik</h1>
+                <?php elseif($data=='user') :?>
+                  <h1 class="m-0 text-dark">Kelola User</h1>
+              <?php else :?>
+                <h1 class="m-0 text-dark">Administrasi</h1>
+              <?php endif; ?>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -80,6 +88,8 @@ $data = $_GET['data'];
                 <li class="breadcrumb-item active">Tambah Poli Klinik</li>
               <?php elseif($data=='jadwal poli klinik') :?>
                 <li class="breadcrumb-item active">Tambah Jadwal Poli Klinik</li>
+              <?php elseif($data=='user') :?>
+                <li class="breadcrumb-item active">Tambah User</li>
               <?php else :?>
                 <li class="breadcrumb-item active">Tambah Loket Administrasi</li>
               <?php endif; ?>
@@ -101,6 +111,8 @@ $data = $_GET['data'];
                   <h5 class="my-auto">Tambah Poli Klinik</h5>
                 <?php elseif($data=='jadwal poli klinik') :?>
                   <h5 class="my-auto">Tambah Jadwal Poli Klinik</h5>
+                  <?php elseif($data=='user') :?>
+                  <h5 class="my-auto">Tambah User</h5>
                 <?php else :?>
                   <h5 class="my-auto">Tambah Loket Administrasi</h5>
                 <?php endif; ?>
@@ -202,6 +214,136 @@ $data = $_GET['data'];
                                 <input type="time" class="form-control" id="waktu_praktek" name="waktu_praktek" placeholder="Masukan Waktu Praktek" required/>
                             </div>
                         </div>
+                    </div>
+                    <div class="form-group row mb-0">
+                        <div class="col-12 justify-content-end d-flex mb-0">
+                            <button type="submit" name="submit" class="btn btn-info">Tambah Data</button>
+                        </div>
+                    </div>   
+                </form>
+
+                <!-- insert user -->
+                <?php elseif($data == 'user') :?>
+                <form class="form-horizontal" action="" method="POST">
+                    <div class="form-group row">
+                      <label for="email" class="col-sm-2 col-form-label">Email</label>
+                      <div class="col-sm-10">
+                          <div class="input-group">
+                              <div class="input-group-prepend">
+                                  <span class="input-group-text"><i class="fa fa-at"></i></span>
+                              </div>
+                              <input type="email" class="form-control" id="email" name="email" placeholder="Masukan Email" required>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="password" class="col-sm-2 col-form-label">Password</label>
+                      <div class="col-sm-10">
+                          <div class="input-group">
+                              <div class="input-group-prepend">
+                                  <span class="input-group-text"><i class="fa fa-key"></i></span>
+                              </div>
+                              <input type="password" class="form-control" id="password" name="password" placeholder="Masukan Password" required>
+                          </div>
+                      </div>
+                    </div>
+                    <hr>
+                    <div class="form-group row">
+                      <label for="nama" class="col-sm-2 col-form-label">Nama</label>
+                      <div class="col-sm-10">
+                          <div class="input-group">
+                              <input type="text" class="form-control" id="nama" name="nama_pasien" placeholder="Masukan Nama" required>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="nik" class="col-sm-2 col-form-label">NIK</label>
+                      <div class="col-sm-10">
+                          <div class="input-group">
+                              <input type="number" class="form-control" id="nik" name="nik_pasien" placeholder="Masukan NIK" required>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="no_bpjs" class="col-sm-2 col-form-label">No BPJS</label>
+                      <div class="col-sm-10">
+                          <div class="input-group">
+                              <input type="number" class="form-control" id="no_bpjs" name="nomor_bpjs" placeholder="Kosongkan bila tidak ada">
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="tanggal_lahir" class="col-sm-2 col-form-label">Tanggal Lahir</label>
+                      <div class="col-sm-10">
+                        <div class="input-group">
+                          <div class="input-group-append">
+                              <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                          </div>
+                          <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" required>
+                          <div class="input-group-append">
+                              <div class="input-group-text">Bulan / Hari / Tahun</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-sm-2 col-form-label">Jenis Kelamin </label>
+                      <div class="col-sm-10 d-flex flex-row">
+                          <div class="form-check my-auto mx-2">
+                            <input class="form-check-input" type="radio" name="jenis_kelamin" id="laki - laki" value="laki - laki" required>
+                            <label class="form-check-label" for="laki - laki">Laki - laki</label>
+                          </div>
+                          <div class="form-check my-auto mx-2">
+                            <input class="form-check-input" type="radio" name="jenis_kelamin" id="perempuan" value="perempuan">
+                            <label class="form-check-label" for="perempuan">Perempuan</label>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="gol_darah" class="col-sm-2 col-form-label">Gol. Darah</label>
+                      <div class="col-sm-10">
+                        <div class="input-group">
+                          <select class="form-control" id="gol_darah" name="gol_darah" required>
+                            <option hidden="" value="">-- Pilih Golongan Darah --</option>
+                            <option value=="Tidak Tau">Tidak Tau</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="AB">AB</option>
+                            <option value="O">O</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="alamat" class="col-sm-2 col-form-label">Alamat</label>
+                      <div class="col-sm-10">
+                        <textarea class="form-control" id="alamat" name="alamat" placeholder="Masukan Alamat Pasien" required></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="no_hp" class="col-sm-2 col-form-label">No Hp</label>
+                      <div class="col-sm-10">
+                        <input type="number" class="form-control" id="no_hp" name="no_hp" placeholder="Masukan No Hp" required></input>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="role" class="col-sm-2 col-form-label">Role</label>
+                      <div class="col-sm-10">
+                        <div class="input-group">
+                          <div class="input-group-append">
+                              <div class="input-group-text"><i class="fa fa-user-tag"></i></div>
+                          </div>
+                          <select class="form-control" id="role" name="role" required>
+                            <option hidden="" value="">-- Pilih Role --</option>
+                            <?php if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik') :?>
+                            <option value="kepala klinik">Kepala Klinik</option>
+                            <?php endif; ?>
+                            <option value="petugas administrasi">Petugas Administrasi</option>
+                            <option value="dokter">Dokter</option>
+                            <option value="pasien">Pasien</option>
+                          </select>
+                        </div>
+                      </div>
                     </div>
                     <div class="form-group row mb-0">
                         <div class="col-12 justify-content-end d-flex mb-0">
@@ -318,6 +460,31 @@ $data = $_GET['data'];
               swal('Error!', 'Data Jadwal Gagal Ditambahkan', 'error')
               .then((value) => {
                   window.location.href = 'insert.php?data=jadwal%20poli%20klinik';
+              });
+          <?php endif; ?>
+      </script> 
+
+  <?php elseif($_GET['data']=='user') :?>
+      <script>
+          <?php if($result==(1)) :?>
+              swal('Berhasil!', 'Akun User Berhasil Ditambahkan', 'success')
+              .then((value) => {
+                  window.location.href = 'list.php?data=user';
+              });
+          <?php elseif($result=='email sudah pernah didaftarkan') :?>
+              swal('Gagal!', 'Email sudah pernah didaftarkan! Silahkan gunakan alamat email lain', 'error')
+              .then((value) => {
+                  window.location.href = 'insert.php?data=user';
+              });
+          <?php elseif($result=='password minimal 8 karakter') :?>
+              swal('Perhatian!', 'Password minimal 8 karakter!', 'warning')
+              .then((value) => {
+                  window.location.href = 'insert.php?data=user';
+              });
+          <?php else :?>
+              swal('Error!', 'Akun User Gagal Ditambahkan', 'error')
+              .then((value) => {
+                  window.location.href = 'insert.php?data=user';
               });
           <?php endif; ?>
       </script> 

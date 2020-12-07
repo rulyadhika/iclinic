@@ -15,6 +15,8 @@ $id = $_GET['id'];
         $result = updatePoliKlinik($_POST);
       }elseif($data=='jadwal poli klinik'){
         $result = updateJadwalPoliKlinik($_POST);
+      }elseif($data=='user'){
+        $result = updateDataUser($_POST);
       }
     }
 
@@ -26,12 +28,18 @@ $id = $_GET['id'];
 
         //mengambil seluruh nama2 dokter
         $dokter = select("SELECT tb_akun_user.id as id_akun,tb_biodata_user.nama FROM tb_akun_user JOIN tb_biodata_user 
-                  ON tb_akun_user.id = tb_biodata_user.id_akun");
+                  ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_akun_user.user_role = 'dokter'");
+
     }elseif($data == 'jadwal poli klinik'){
         $jadwalPoliKlinik = select("SELECT tb_jadwal.*,tb_unit.nama_unit,tb_biodata_user.nama as nama_dokter FROM tb_jadwal JOIN tb_unit
                             ON tb_jadwal.id_unit = tb_unit.id JOIN tb_akun_user ON tb_unit.id_akun_dokter = tb_akun_user.id 
                             JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_jadwal.id=$id")[0];
         $hari = ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"];
+    }elseif($data == 'user'){
+        $user_id = $_GET['id'];
+
+        $data_user = select("SELECT tb_akun_user.id as id_akun_user,tb_akun_user.email,tb_akun_user.user_role,tb_biodata_user.*
+                    FROM tb_akun_user JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_akun_user.id = $user_id")[0];
     }
 
 ?>
@@ -71,12 +79,23 @@ $id = $_GET['id'];
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Poli Klinik</h1>
+            <?php if($data=='poli klinik') :?>
+              <h1 class="m-0 text-dark">Poli Klinik</h1>
+            <?php elseif($data=='user') :?>
+              <h1 class="m-0 text-dark">Kelola User</h1>
+            <?php endif; ?>
+            
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active"><?= $data=='poli klinik'? 'Edit Poli Klinik':'Edit Jadwal Poli Klinik'; ?></li>
+              <?php if($data=='poli klinik') :?>
+                <li class="breadcrumb-item active">Edit Poli Klinik</li>
+              <?php elseif($data=='jadwal poli klinik') :?>
+                <li class="breadcrumb-item active">Edit Jadwal Poli Klinik</li>
+              <?php elseif($data=='user') :?>
+                <li class="breadcrumb-item active">Edit Data User</li>
+              <?php endif; ?>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -91,7 +110,13 @@ $id = $_GET['id'];
           <div class="col">
             <div class="card ">
               <div class="card-header">
-                <h5 class="m-0"><?= $data=='poli klinik'? 'Edit Poli Klinik':'Edit Jadwal Poli Klinik'; ?></h5>
+              <?php if($data=='poli klinik') :?>
+                <h5 class="m-0">Edit Poli Klinik</h5>
+              <?php elseif($data=='jadwal poli klinik') :?>
+                <h5 class="m-0">Edit Jadwal Poli Klinik</h5>
+              <?php elseif($data=='user') :?>
+                <h5 class="m-0">Edit Data User</h5>
+              <?php endif; ?>
               </div>
               <div class="card-body">
 
@@ -148,6 +173,126 @@ $id = $_GET['id'];
                         </div>
                     </div>   
                 </form>
+
+                <!-- edit form adata user -->
+                <?php elseif($data == "user") :?>
+                  <form class="form-horizontal" action="" method="POST">
+                    <input type="hidden" name="user_id" value="<?= $user_id; ?>">
+                    <div class="form-group row">
+                      <label for="email" class="col-sm-2 col-form-label">Email</label>
+                      <div class="col-sm-10">
+                          <div class="input-group">
+                              <div class="input-group-prepend">
+                                  <span class="input-group-text"><i class="fa fa-at"></i></span>
+                              </div>
+                              <input type="email" class="form-control" id="email" placeholder="Masukan Email" value="<?= $data_user['email']; ?>" readonly required>
+                          </div>
+                      </div>
+                    </div>
+                    <hr>
+                    <div class="form-group row">
+                      <label for="nama" class="col-sm-2 col-form-label">Nama</label>
+                      <div class="col-sm-10">
+                          <div class="input-group">
+                              <input type="text" class="form-control" id="nama" name="nama_pasien" placeholder="Masukan Nama" value="<?= $data_user['nama']; ?>" required>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="nik" class="col-sm-2 col-form-label">NIK</label>
+                      <div class="col-sm-10">
+                          <div class="input-group">
+                              <input type="number" class="form-control" id="nik" name="nik_pasien" placeholder="Masukan NIK" value="<?= $data_user['nik']; ?>" required>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="no_bpjs" class="col-sm-2 col-form-label">No BPJS</label>
+                      <div class="col-sm-10">
+                          <div class="input-group">
+                              <input type="number" class="form-control" id="no_bpjs" name="nomor_bpjs" value="<?= $data_user['no_bpjs']; ?>" placeholder="Kosongkan bila tidak ada">
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="tanggal_lahir" class="col-sm-2 col-form-label">Tanggal Lahir</label>
+                      <div class="col-sm-10">
+                        <div class="input-group">
+                          <div class="input-group-append">
+                              <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                          </div>
+                          <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" value="<?= $data_user['tanggal_lahir']; ?>" required>
+                          <div class="input-group-append">
+                              <div class="input-group-text">Bulan / Hari / Tahun</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-sm-2 col-form-label">Jenis Kelamin </label>
+                      <div class="col-sm-10 d-flex flex-row">
+                          <div class="form-check my-auto mx-2">
+                            <input class="form-check-input" type="radio" name="jenis_kelamin" id="laki - laki" value="laki - laki" <?= $data_user['jenis_kelamin']=='laki - laki'?'checked':''; ?> required>
+                            <label class="form-check-label" for="laki - laki">Laki - laki</label>
+                          </div>
+                          <div class="form-check my-auto mx-2">
+                            <input class="form-check-input" type="radio" name="jenis_kelamin" id="perempuan" value="perempuan" <?= $data_user['jenis_kelamin']=='perempuan'?'checked':''; ?>>
+                            <label class="form-check-label" for="perempuan">Perempuan</label>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="gol_darah" class="col-sm-2 col-form-label">Gol. Darah</label>
+                      <div class="col-sm-10">
+                        <div class="input-group">
+                          <select class="form-control" id="gol_darah" name="gol_darah" required>
+                            <option hidden="" value="">-- Pilih Golongan Darah --</option>
+                            <option value=="Tidak Tau" <?= $data_user['gol_darah']=='Tidak Tau'?'selected':''; ?> >Tidak Tau</option>
+                            <option value="A" <?= $data_user['gol_darah']=='A'?'selected':''; ?> >A</option>
+                            <option value="B" <?= $data_user['gol_darah']=='B'?'selected':''; ?> >B</option>
+                            <option value="AB" <?= $data_user['gol_darah']=='AB'?'selected':''; ?> >AB</option>
+                            <option value="O" <?= $data_user['gol_darah']=='0'?'selected':''; ?> >O</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="alamat" class="col-sm-2 col-form-label">Alamat</label>
+                      <div class="col-sm-10">
+                        <textarea class="form-control" id="alamat" name="alamat" placeholder="Masukan Alamat Pasien" required><?= $data_user['alamat']; ?></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="no_hp" class="col-sm-2 col-form-label">No Hp</label>
+                      <div class="col-sm-10">
+                        <input type="number" class="form-control" id="no_hp" name="no_hp" placeholder="Masukan No Hp" value="0<?= $data_user['no_hp']; ?>" required></input>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="role" class="col-sm-2 col-form-label">Role</label>
+                      <div class="col-sm-10">
+                        <div class="input-group">
+                          <div class="input-group-append">
+                              <div class="input-group-text"><i class="fa fa-user-tag"></i></div>
+                          </div>
+                          <select class="form-control" id="role" name="role" required>
+                            <option hidden="" value="">-- Pilih Role --</option>
+                            <?php if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik') :?>
+                            <option value="kepala klinik" <?= $data_user['user_role']=='kepala klinik'?'selected':''; ?> >Kepala Klinik</option>
+                            <?php endif; ?>
+                            <option value="petugas administrasi" <?= $data_user['user_role']=='petugas administrasi'?'selected':''; ?>>Petugas Administrasi</option>
+                            <option value="dokter" <?= $data_user['user_role']=='dokter'?'selected':''; ?>>Dokter</option>
+                            <option value="pasien" <?= $data_user['user_role']=='pasien'?'selected':''; ?>>Pasien</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group row mb-0">
+                        <div class="col-12 justify-content-end d-flex mb-0">
+                            <button type="submit" name="update" class="btn btn-info">Edit Data</button>
+                        </div>
+                    </div>   
+                  </form>
 
                 <!-- edit form jadwal poli klinik -->
                 <?php elseif($data == 'jadwal poli klinik') :?>
@@ -284,6 +429,18 @@ $id = $_GET['id'];
               });
           <?php else :?>
               swal('Error!', 'Data Jadwal Gagal Diupdate', 'error');
+          <?php endif; ?>
+      </script> 
+
+  <?php elseif($_GET['data']=='user') :?>
+      <script>
+          <?php if($result==(1)) :?>
+              swal('Berhasil!', 'Data User Berhasil Diupdate', 'success')
+              .then((value) => {
+                  window.location.href = 'list.php?data=user';
+              });
+          <?php else :?>
+              swal('Error!', 'Data User Gagal Diupdate', 'error');
           <?php endif; ?>
       </script> 
 

@@ -61,6 +61,13 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         $password = $data['password'];
         $user_role = 'pasien';
 
+        //memastikan jika register akun via dashboard admin
+        if(isset($_SESSION['login'])){
+            if($_SESSION['role']!='pasien' || $_SESSION['role']!='dokter'){
+                $user_role = $data['role'];
+            }
+        }
+
         //cek apakah email sudah pernah terdaftar atau belum
         $result = mysqli_query($conn,"SELECT id FROM tb_akun_user WHERE email = '$email'");
 
@@ -123,6 +130,48 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         mysqli_query($conn,$query);
 
         return mysqli_affected_rows($conn);
+    }
+
+    function updateDataUser($data){
+        global $conn;
+
+        $nama = $data['nama_pasien'];
+        $nik = $data['nik_pasien'];
+        $jenis_kelamin = $data['jenis_kelamin'];
+        $tanggal_lahir = $data['tanggal_lahir'];
+        $gol_darah = $data['gol_darah'];
+        $no_hp = $data['no_hp'];
+        $alamat = $data['alamat'];
+        $no_bpjs = $data['nomor_bpjs'];
+        $id_user = $data['user_id'];
+
+        //jika tidak memiliki nomor bpjs
+        if(strlen($no_bpjs)==0){
+            $no_bpjs = "NULL";
+        }
+
+        $query = "UPDATE tb_biodata_user SET nama = '$nama', nik = $nik , jenis_kelamin = '$jenis_kelamin' , 
+            tanggal_lahir = '$tanggal_lahir', gol_darah = '$gol_darah', no_hp = $no_hp , alamat = '$alamat',
+            no_bpjs = $no_bpjs WHERE id_akun = $id_user
+        ";
+
+        if(mysqli_query($conn,$query)){
+            //update role
+            //memastikan jika register akun via dashboard admin
+            if(isset($_SESSION['login'])){
+                if($_SESSION['role']!='pasien' || $_SESSION['role']!='dokter'){
+                    $user_role = $data['role'];
+
+                    mysqli_query($conn,"UPDATE tb_akun_user SET user_role = '$user_role' WHERE id = $id_user");
+
+                    if(!mysqli_affected_rows($conn)>0){
+                        return 1;
+                    }
+                }
+            }
+            
+            return mysqli_affected_rows($conn);
+        };
 
 
     }
