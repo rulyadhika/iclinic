@@ -1,6 +1,9 @@
 <?php 
 session_start();
 define("root",true);
+if (!isset($_SESSION['login'])){
+    header("location: ../login.php");
+}
 ?>
 
 <!DOCTYPE html>
@@ -9,12 +12,12 @@ define("root",true);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservasi Online</title>
-    <link rel="stylesheet" href="../../src/css/style.css">
+    <link rel="stylesheet" href="../src/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-<?php require_once '../../components/nav-side-bar.php' ?>
+<?php require_once '../components/nav-side-bar.php' ?>
     <div class="main">
         <div class="bar">
             <div class="bar-icon">

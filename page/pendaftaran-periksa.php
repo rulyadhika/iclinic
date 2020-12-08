@@ -1,6 +1,9 @@
 <?php 
 include "../utility/function.php";
 session_start();
+if (!isset($_SESSION['login'])){
+    header("location: ../login.php");
+}
 define("root",true);
 
     //submit pendaftaran handler
@@ -53,7 +56,7 @@ define("root",true);
                             <label for="tanggal_periksa">Tanggal Periksa</label>
                             <select name="tanggal_periksa" id="tanggal_periksa" required>
                                 <option value="" hidden>--Pilih tanggal--</option>
-                            <?php for($i=1;$i<=3;$i++) :?>
+                            <?php for($i=1;$i<= 3;$i++) :?>
                                 <option value="<?= strtotime("+". $i ."Day",time()); ?>"> <?= strftime("%A, %d %B %Y",strtotime("+". $i ."Day",time())); ?> </option>
                             <?php endfor; ?>
                             </select>
@@ -104,7 +107,7 @@ define("root",true);
                     window.open("../utility/print.php?reg=online");
                 })
                 .then(()=>{
-                    window.location.href = 'page/account/riwayat-pendaftaran.php';
+                    window.location.href = 'riwayat-antrian.php';
                 });
             <?php else :?>
                 swal('Error!', 'Data Pendaftaran Gagal Ditambahkan', 'error')

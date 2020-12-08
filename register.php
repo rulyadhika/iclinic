@@ -1,5 +1,5 @@
 <?php 
-require '../utility/function.php';
+require './utility/function.php';
 
 if(isset($_POST['register'])){
     $result = registerAkun($_POST);
@@ -13,7 +13,7 @@ if(isset($_POST['register'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="../src/css/style.css">
+    <link rel="stylesheet" href="./src/css/style.css">
 </head>
 <body>
     <nav class="login">
@@ -100,17 +100,17 @@ if(isset($_POST['register'])){
     <?php if($result==(1)) :?>
         swal('Berhasil!', 'Akun berhasil dibuat! Klik ok untuk login', 'success')
         .then((value) => {
-            window.location.href = 'login.php';
+            window.location.href = './login.php';
         });
     <?php elseif($result=='email sudah pernah didaftarkan') :?>
         swal('Gagal!', 'Email sudah pernah didaftarkan! Silahkan gunakan alamat email lain', 'error')
         .then((value) => {
-            window.location.href = 'register.php';
+            window.location.href = './register.php';
         });
     <?php elseif($result=='password minimal 8 karakter') :?>
         swal('Perhatian!', 'Password minimal 8 karakter!', 'warning')
         .then((value) => {
-            window.location.href = 'register.php';
+            window.location.href = './register.php';
         });
     <?php endif; ?>
 </script> 

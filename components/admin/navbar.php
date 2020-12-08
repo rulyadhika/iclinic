@@ -49,11 +49,11 @@ if(!defined('root')){
           <i class="fa fa-cog"></i>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <a href="#" class="dropdown-item">
+          <a href="<?= BASEURL ?>index.php" class="dropdown-item">
             <i class="fa fa-home mr-2"></i> Homepage
           </a>
           <div class="dropdown-divider"></div>
-          <a href="<?= BASEURL ?>page/account/logout.php" class="dropdown-item">
+          <a href="<?= BASEURL ?>./logout.php" class="dropdown-item">
             <i class="fa fa-sign-out-alt mr-2"></i> Log out
           </a>
           <div class="dropdown-divider"></div>

@@ -67,7 +67,7 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
                with font-awesome or any other icon font library -->
       
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="dashboard.php" class="nav-link">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Dashboard

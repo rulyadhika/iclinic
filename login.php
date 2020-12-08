@@ -1,13 +1,13 @@
 <?php 
-require '../utility/function.php';
+require './utility/function.php';
 session_start();
 
 if(isset($_POST['login'])){
     $result = login($_POST);
     if($result!='pasien' && $result!=false){
-        header("location:../admin/dashboard.php");die;
+        header("location:./admin/dashboard.php");die;
     }elseif($result=='pasien'){
-        header("location:../index.php");die;
+        header("location:./index.php");die;
     }
 }
 
@@ -18,7 +18,7 @@ if(isset($_POST['login'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="../src/css/style.css">
+    <link rel="stylesheet" href="./src/css/style.css">
 </head>
 <body>
     <nav class="login">
@@ -62,7 +62,7 @@ if(isset($_POST['login'])){
     <?php if($result==false) :?>
         swal('Gagal!', 'Email / Password salah! Silahkan periksa kembali', 'error')
         .then((value) => {
-            window.location.href = 'login.php';
+            window.location.href = './login.php';
         });
     <?php endif; ?>
 </script> 

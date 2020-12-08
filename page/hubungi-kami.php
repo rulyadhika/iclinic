@@ -1,36 +1,21 @@
+<?php 
+require '../utility/function.php';
+session_start();
+define("root",true);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservasi Online</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="/fontawesome-free-5.15.1-web/css/all.min.css">
+    <link rel="stylesheet" href="../src/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-    <script src="jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-    <nav>
-        <div class="logo">
-            <h1>i-Clinic</h1>
-        </div>
-        <div class="user">
-            <i class="fas fa-user-circle"></i>
-            Hallo, Febri!
-        </div>
-    </nav>
-    <ul class="sidebar">
-        <div class="close-icon">
-            <i class="fas fa-times"></i>
-        </div>
-        <li><a href="cpanel.html"><i class="fas fa-home"></i>Beranda</a></li>
-        <li><a href="ubah_profil.html"><i class="fas fa-user"></i>Ubah Profil</a></li>
-        <li><a href="ubah_password.html"><i class="fas fa-lock"></i>Ubah Password</a></li>
-        <li><a href="riwayat_antrian.html"><i class="fas fa-history"></i>Riwayat Antrian</a></li>
-        <li><a href="hubungi_kami.html"><i class="fas fa-phone-alt"></i>Hubungi Kami</a></li>
-        <li><a href="login.html"><i class="fas fa-sign-out-alt"></i>Keluar</a></li>
-    </ul>
+    <?php require_once '../components/nav-side-bar.php' ?>
     <div class="main">
         <div class="bar">
             <div class="bar-icon">
