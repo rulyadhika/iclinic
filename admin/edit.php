@@ -277,9 +277,7 @@ $id = $_GET['id'];
                           </div>
                           <select class="form-control" id="role" name="role" required>
                             <option hidden="" value="">-- Pilih Role --</option>
-                            <?php if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik') :?>
                             <option value="kepala klinik" <?= $data_user['user_role']=='kepala klinik'?'selected':''; ?> >Kepala Klinik</option>
-                            <?php endif; ?>
                             <option value="petugas administrasi" <?= $data_user['user_role']=='petugas administrasi'?'selected':''; ?>>Petugas Administrasi</option>
                             <option value="dokter" <?= $data_user['user_role']=='dokter'?'selected':''; ?>>Dokter</option>
                             <option value="pasien" <?= $data_user['user_role']=='pasien'?'selected':''; ?>>Pasien</option>

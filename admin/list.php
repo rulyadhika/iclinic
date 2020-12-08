@@ -9,17 +9,11 @@ define("root",true);
 $data = $_GET['data'];
 
 if($data=='user'){
-    if($_SESSION['role']=='developer' || $_SESSION['role']=='kepala klinik'){
+    if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik'){
         $list_users = select("SELECT tb_akun_user.id,tb_akun_user.email,tb_akun_user.user_role,tb_biodata_user.nama,
                         tb_biodata_user.no_hp,tb_biodata_user.alamat FROM tb_akun_user JOIN tb_biodata_user 
                         ON tb_akun_user.id = tb_biodata_user.id_akun");
-    }else{
-        $list_users = select("SELECT tb_akun_user.id,tb_akun_user.email,tb_akun_user.user_role,tb_biodata_user.nama,
-                        tb_biodata_user.no_hp,tb_biodata_user.alamat FROM tb_akun_user JOIN tb_biodata_user 
-                        ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_akun_user.user_role <> 'kepala klinik' 
-                        AND tb_akun_user.user_role <> 'developer'");
     }
-   
 }
 
 $no = 1;

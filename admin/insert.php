@@ -335,9 +335,7 @@ $data = $_GET['data'];
                           </div>
                           <select class="form-control" id="role" name="role" required>
                             <option hidden="" value="">-- Pilih Role --</option>
-                            <?php if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik') :?>
                             <option value="kepala klinik">Kepala Klinik</option>
-                            <?php endif; ?>
                             <option value="petugas administrasi">Petugas Administrasi</option>
                             <option value="dokter">Dokter</option>
                             <option value="pasien">Pasien</option>

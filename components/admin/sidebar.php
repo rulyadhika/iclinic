@@ -118,7 +118,9 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
               </li>
             </ul>
           </li>
+          <?php endif; ?>
 
+          <?php if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik')  :?>
           <!-- kelola user -->
 
           <li class="nav-item"> 
