@@ -23,7 +23,7 @@ if(isset($_GET['queue'])){
 }
 
 //untuk list menu antrian apa saja yg akan ditampilkan
-if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala rs'){
+if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
   $list_poli_klinik = select("SELECT id,nama_unit FROM tb_unit WHERE id>1");
 }elseif($_SESSION['role'] === 'petugas administrasi'){
   $list_poli_klinik = [];
@@ -140,6 +140,7 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala rs'){
               </p>
             </a>
             <ul class="nav nav-treeview">
+            
               <?php if($_SESSION['role'] == 'petugas administrasi') :?>
                 <li class="nav-item">
                   <?php if(count($akun_adm_assigned)>0) :?>
