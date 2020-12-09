@@ -2,14 +2,14 @@
 define("BASEURL", 'http://localhost/web/webKlinik/');
 
 if(!defined("root")){
-    header("location:".BASEURL);die;
+    header("location:".BASEURL."index.php");die;
 }
 
 ?>
 
 <nav>
     <div class="logo">
-        <h1>i-Clinic</h1>
+        <a href="<?= BASEURL ?>/index.php"><h1>i-Clinic</h1></a>
     </div>
     <?php if(!isset($_SESSION['login'])) :?>
     <div class="user" style=" font-weight:500;">

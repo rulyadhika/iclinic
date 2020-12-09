@@ -23,7 +23,7 @@ if(isset($_POST['login'])){
 <body>
     <nav class="login">
         <div class="logo">
-            <h1>i-Clinic</h1>
+            <a href="./index.php"><h1>i-Clinic</h1></a>
         </div>
         <div class="tanya">
             <span>Belum Punya Akun?</span>

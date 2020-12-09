@@ -35,23 +35,29 @@ if (!isset($_SESSION['login'])){
             <?php if($riwayat_antri == NULL): ?>
             <h2>Riwayat antrian anda masih kosong!</h2>
             <?php else :?>
-            <table>
+            <table style="font-weight: bold;">
                 <tr>
                     <th>No</th>
                     <th>Tanggal</th>
                     <th>Poli</th>
-                    <th>Antrian Admins</th>
+                    <th>Antrian Administrasi</th>
                     <th>Antrian Poli</th>
                     <th>Aksi</th>
                 </tr>
                 <?php foreach($riwayat_antri as $riwayat)  :?>
                 <tr>
                     <td style="text-align:center"><?= $no; ?></td>
-                    <td><?= $riwayat['tanggal_periksa']; ?></td>
-                    <td><?= $riwayat['nama_unit']; ?></td>
+                    <td><?= strftime("%A, %d-%m-%Y",strtotime($riwayat['tanggal_periksa'])); ?></td>
+                    <td style="text-align:center"><?= $riwayat['nama_unit']; ?></td>
                     <td style="text-align:center"><?= $riwayat['no_antrian_administrasi']; ?></td>
                     <td style="text-align:center"><?= $riwayat['no_antrian_poli']; ?></td>
-                    <td style="text-align:center"><a href="../utility/print.php?reg=online">Lihat</a></td>
+                    <td style="text-align:center">
+                        <?php if($riwayat['tanggal_periksa']>=date("Y-m-d",time())) :?>
+                            <a href="../utility/print.php?reg=online">Cetak Pdf</a>
+                        <?php else :?>
+                            -
+                        <?php endif; ?>
+                    </td>
                 </tr>
                 <?php $no++ ?>
                 <?php endforeach; ?>
