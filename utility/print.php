@@ -2,26 +2,71 @@
 session_start();
 include "./function.php";
 
+  //redirect handler
   if(!isset($_GET['reg'])){
     header("Location:../index.php");die;
   }else{
-
-    if($_GET['reg']=='online'){
-
-      if(!isset($_SESSION['id_pendaftaran'])){
-        header("location:../index.php");die;
-      }else{
-        $id_pendaftaran = $_SESSION['id_pendaftaran'];
-
-        $data_pendaftaran = select("SELECT tb_unit.nama_unit, tb_pendaftaran_online.*,tb_akun_user.email, tb_biodata_user.* 
-                            FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit JOIN tb_pendaftaran_online 
-                            ON tb_jadwal.id = tb_pendaftaran_online.id_jadwal JOIN tb_akun_user
-                            ON tb_pendaftaran_online.id_user = tb_akun_user.id JOIN tb_biodata_user 
-                            ON tb_akun_user.id = tb_biodata_user.id_akun 
-                            WHERE tb_pendaftaran_online.id = $id_pendaftaran")[0];
-      }
-
+    if(!isset($_GET['data-id'])){
+      header("location:../index.php");die;
     }else{
+      //print untuk pendaftaran online
+      if($_GET['reg']=='online'){
+          $id_pendaftaran = $_GET['data-id'];
+          $user_id = $_SESSION["user_id"];
+
+          $data_pendaftaran = select("SELECT tb_unit.nama_unit, tb_pendaftaran_online.*,tb_akun_user.email, tb_biodata_user.* 
+                              FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit JOIN tb_pendaftaran_online 
+                              ON tb_jadwal.id = tb_pendaftaran_online.id_jadwal JOIN tb_akun_user
+                              ON tb_pendaftaran_online.id_user = tb_akun_user.id JOIN tb_biodata_user 
+                              ON tb_akun_user.id = tb_biodata_user.id_akun 
+                              WHERE tb_pendaftaran_online.id = $id_pendaftaran AND tb_pendaftaran_online.id_user = $user_id");
+
+          /*pengecekan apakah data tersedia atau tidak dan id pada url(id pendaftaran) 
+          dan id user ada pada satu record di tabel pendaftaran */
+          if($data_pendaftaran == null){
+            echo "<script>alert('Maaf data tidak ditemukan');
+                          window.location.href = '../index.php';
+                  </script>";die;
+          }else{
+
+            //pengecekan apakah data tanggal periksa pasien >= tanggal hari ini
+            if($data_pendaftaran[0]['tanggal_periksa'] >= date("Y-m-d",time())){
+              $data_pendaftaran = $data_pendaftaran[0];
+            }else{
+              echo "<script>alert('Maaf data ini sudah tidak bisa dicetak lagi, karena telah kadaluarsa');
+                          window.location.href = '../index.php';
+                    </script>";die;
+            }
+
+          }
+      }elseif($_GET['reg']=='offline'){
+      //print untuk pendaftaran offline
+        
+        //pengecekan siapa yg mengakses halaman ini
+        if($_SESSION['role']=='pasien'){
+          header("location:../index.php");die;  
+        }else{
+          $id_pendaftaran = $_GET['data-id'];
+          $tanggal_hari_ini = date("Y-m-d",time());
+          
+          $data_pendaftaran = select("SELECT tb_unit.nama_unit, tb_pendaftaran_offline.no_antrian_poli,tb_pendaftaran_offline.kd_pendaftaran,tb_pendaftaran_offline.nama
+                              FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit JOIN tb_pendaftaran_offline 
+                              ON tb_jadwal.id = tb_pendaftaran_offline.id_jadwal
+                              WHERE tb_pendaftaran_offline.id = $id_pendaftaran AND tanggal_periksa = '$tanggal_hari_ini'");
+
+          //pengecekan apakah data tersedia atau tidak
+          if($data_pendaftaran == null){
+            echo "<script>alert('Maaf data tidak ditemukan');
+                          window.location.href = '../admin/queue.php?queue=administrasi&data=adm';
+                  </script>";die;
+          }else{
+            $data_pendaftaran = $data_pendaftaran[0];
+          }
+        }
+      }else{
+        // jika data reg dari url bukan offline/online
+        header("location:../index.php");die;
+      }
 
     }
   }
@@ -93,7 +138,9 @@ include "./function.php";
     <body>
         <div id="wrapper">
 
-            <?php if($_GET['reg']=='online')  :?>
+            <?php if($_GET['reg']=='online'):?>
+            <!-- section untuk cetak surat pendaftaran -->
+
               <!-- Main content -->
               <section class="invoice">
                   <!-- title row -->
@@ -255,27 +302,30 @@ include "./function.php";
                   <!-- /.row -->
               </section>
               <!-- /.content -->
+
             <?php else :?>
+              <!-- section untuk cetak tiket nomor antrian -->
+
               <section class="thermal-printer-ticket">
                 <div class="ticket">
                   <p class="text-center mb-0">Nomor Antrian Poli
                       <br>I-Clinic Unsoed
                   </p>
-                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=Example" alt="">
-                  <p class="text-center mb-0">Tanggal : 25/12/2020</p>
+                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=<?= $data_pendaftaran['kd_pendaftaran']; ?>" alt="">
+                  <p class="text-center mb-0">Tanggal : <?= strftime("%d/%m/%Y", time()); ?></p>
                   <table class="mt-2">
                     <tbody>
                         <tr>
                           <td class="data">Nomor Antrian</td>
-                          <td class="value">: 2</td>
+                          <td class="value">: <?= $data_pendaftaran['no_antrian_poli']; ?></td>
                         </tr>
                         <tr>
                             <td class="data">Nama</td>
-                            <td class="value">: Ruly Adhika</td>
+                            <td class="value">: <?= $data_pendaftaran['nama']; ?></td>
                         </tr>
                         <tr>
                             <td class="data">Poli Tujuan</td>
-                            <td class="value">: Gigi</td>
+                            <td class="value">: <?= $data_pendaftaran['nama_unit']; ?></td>
                         </tr>
                     </tbody>
                   </table>

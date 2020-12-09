@@ -29,7 +29,7 @@ if (!isset($_SESSION['login'])){
         <div class="content">
         <?php
             $id_user = $_SESSION['user_id'];
-            $riwayat_antri = select("SELECT * FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit JOIN tb_pendaftaran_online  ON tb_jadwal.id = tb_pendaftaran_online.id_jadwal WHERE id_user = $id_user order by tanggal_periksa DESC");
+            $riwayat_antri = select("SELECT tb_unit.nama_unit,tb_pendaftaran_online.* FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit JOIN tb_pendaftaran_online  ON tb_jadwal.id = tb_pendaftaran_online.id_jadwal WHERE id_user = $id_user order by tanggal_periksa DESC");
             $no = 1;
             ?>
             <?php if($riwayat_antri == NULL): ?>
@@ -53,7 +53,7 @@ if (!isset($_SESSION['login'])){
                     <td style="text-align:center"><?= $riwayat['no_antrian_poli']; ?></td>
                     <td style="text-align:center">
                         <?php if($riwayat['tanggal_periksa']>=date("Y-m-d",time())) :?>
-                            <a href="../utility/print.php?reg=online">Cetak Pdf</a>
+                            <a href="../utility/print.php?reg=online&data-id=<?= $riwayat['id'] ?>" style="color:#008000">Cetak Pdf</a>
                         <?php else :?>
                             -
                         <?php endif; ?>

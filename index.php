@@ -94,10 +94,10 @@ if(isset($_POST['refresh'])){
             <div class="grid-form">
                 <?php if(isset($_SESSION['login'])) :?>
                 <div class="group-menu">
-                    <h3>Antrian Aktif Anda (3 Terakhir)</h3>
+                    <h3>Antrian Aktif Anda <a href="./page/riwayat-antrian.php" style="color: #008000; float:right;">Lihat Semua</a></h3>
                     <?php
                     $id_user = $_SESSION['user_id'];
-                    $riwayat_antri = select("SELECT * FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit JOIN tb_pendaftaran_online ON tb_jadwal.id = tb_pendaftaran_online.id_jadwal WHERE id_user = $id_user AND tanggal_periksa >= CURDATE() ORDER BY tanggal_periksa ASC LIMIT 0,3");
+                    $riwayat_antri = select("SELECT tb_unit.nama_unit,tb_pendaftaran_online.* FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit JOIN tb_pendaftaran_online ON tb_jadwal.id = tb_pendaftaran_online.id_jadwal WHERE id_user = $id_user AND tanggal_periksa >= CURDATE() ORDER BY tb_pendaftaran_online.tanggal_periksa ASC LIMIT 0,3");
                     ?>
                     <div class="tabel">
                     <?php if($riwayat_antri == NULL): ?>
@@ -116,7 +116,7 @@ if(isset($_POST['refresh'])){
                             <td><?= strftime("%d-%m-%Y",strtotime($riwayat['tanggal_periksa'])); ?></td>
                             <td><?= $riwayat['nama_unit']; ?></td>
                             <td style="text-align:center"><?= $riwayat['no_antrian_administrasi']; ?></td>
-                            <td style="text-align:center"><a href="utility/print.php?reg=online">Cetak</a></td>
+                            <td style="text-align:center"><a style="color:#008000;" href="utility/print.php?reg=online&data-id=<?= $riwayat['id']; ?>">Cetak Pdf</a></td>
                         </tr>
                         <?php endforeach; ?>  
                     </table>

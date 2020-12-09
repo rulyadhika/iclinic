@@ -9,9 +9,6 @@ define("root",true);
     //submit pendaftaran handler
     if(isset($_POST['daftar_periksa'])){
         $result = insertPendaftaranPeriksaOnline($_POST);
-
-        //set session id pendaftaran yang baru saja dibuat
-        $_SESSION['id_pendaftaran'] = $result[1];
     }
 
     //mencari poli tersedia sesuai tanggal yg dpilih pasien via ajax
@@ -104,7 +101,7 @@ define("root",true);
                         button: "Cetak Pdf",
                     })
                 .then((value) => {
-                    window.open("../utility/print.php?reg=online");
+                    window.open("../utility/print.php?reg=online&data-id="+<?= json_encode($result[1])?>);
                 })
                 .then(()=>{
                     window.location.href = 'riwayat-antrian.php';

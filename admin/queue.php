@@ -343,17 +343,18 @@ $no = 1;
   <?php if(isset($result)):?>
       <script>
           //alert untuk pendaftaran pasien offline
-          <?php if($result==(1)) :?>
+          <?php if($result[0]==(1)) :?>
               swal({
                     title: "Berhasil!",
                     text: "Data Pendaftaran Berhasil Ditambahkan",
                     icon: "success",
                     closeOnEsc: false,
                     closeOnClickOutside: false,
+                    closeOnConfirm: false,
                     button: "Cetak Pdf",
                   })
               .then((value) => {
-                  window.open("https://www.w3schools.com");
+                  window.open("../utility/print.php?reg=offline&data-id=<?= $result[1]; ?>");
               })
               .then(()=>{
                 window.location.href = 'queue.php?queue=administrasi&data=adm';

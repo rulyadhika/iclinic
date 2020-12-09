@@ -217,9 +217,12 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
             '$verifikasi_pendaftaran'
         )";
 
-        mysqli_query($conn,$query);
-
-        return mysqli_affected_rows($conn);
+        if(mysqli_query($conn,$query)){
+            $last_id = mysqli_insert_id($conn);
+            return [mysqli_affected_rows($conn),$last_id];
+        }else{
+            return [-1,null];
+        }
 
     }
         
@@ -252,7 +255,9 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         if(mysqli_query($conn,$query)){
             $last_id = mysqli_insert_id($conn);
             return [mysqli_affected_rows($conn),$last_id];
-        };
+        }else{
+            return [-1,null];
+        }
 
 
     }
