@@ -2,6 +2,10 @@
 require '../utility/function.php';
 session_start();
 define("root",true);
+
+if(isset($_POST['submit'])){
+    $result = insertSaranMasukan($_POST);
+}
 ?>
 
 <!DOCTYPE html>
@@ -36,15 +40,35 @@ define("root",true);
                 </div>
             </div>
             <div class="saran">
-                <form action="" method="post">
+                <form action="" method="POST">
                     <h3>Saran atau Masukan</h3>
                     <input type="text" name="subject" placeholder="Subject" required>
-                    <textarea name="pesan" id="pesan" placeholder="Tulis di sini" cols="30" rows="10"></textarea>
-                    <input type="submit" class="submit-btn" value="Kirim">
+                    <textarea name="pesan" id="pesan" placeholder="Tulis pesan di sini" cols="30" rows="10"></textarea>
+                    <input type="submit" class="submit-btn" value="Kirim" name="submit">
                 </form>
             </div>
         </div>
     </div>
+
+    <!-- sweetalert -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- alert popUp area -->
+    <?php if(isset($result)):?>
+          <script>
+              <?php if($result==(1)) :?>
+                  swal('Berhasil!', 'Pesan Berhasil Dikirimkan, Terimakasih atas saran dan masukan yang anda berikan', 'success')
+                  .then((value) => {
+                      window.location.href = 'hubungi-kami.php';
+                  });
+              <?php else :?>
+                  swal('Error!', 'Pesan Gagal Dikirimkan', 'error')
+                  .then((value) => {
+                      window.location.href = 'hubungi-kami.php';
+                  });
+              <?php endif; ?>
+          </script> 
+    <?php endif; ?>
+
     <script>
         $(document).ready(function(){
             $(".bar-icon, .close-icon").click(function(){

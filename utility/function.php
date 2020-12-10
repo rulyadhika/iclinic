@@ -481,5 +481,26 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         return mysqli_affected_rows($conn);
     }
 
+    function insertSaranMasukan($data){
+        global $conn;
+
+        $subject = $data['subject'];
+        $pesan = $data['pesan'];
+        $time = time();
+
+        $query = "INSERT INTO tb_saran_masukan VALUES(
+            '',
+            '$subject',
+            '$pesan',
+            $time
+        )";
+
+        var_dump($time);
+
+        mysqli_query($conn,$query);
+
+        return mysqli_affected_rows($conn);
+    }
+
 
 ?>

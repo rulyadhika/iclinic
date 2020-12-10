@@ -8,11 +8,13 @@ define("root",true);
 
 $data = $_GET['data'];
 
-if($data=='user'){
-    if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik'){
+if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik'){
+  if($data=='user'){
         $list_users = select("SELECT tb_akun_user.id,tb_akun_user.email,tb_akun_user.user_role,tb_biodata_user.nama,
                         tb_biodata_user.no_hp,tb_biodata_user.alamat FROM tb_akun_user JOIN tb_biodata_user 
                         ON tb_akun_user.id = tb_biodata_user.id_akun");
+    }elseif($data=='pesan'){
+        $pesan = select("SELECT * FROM tb_saran_masukan");
     }
 }
 
@@ -54,13 +56,15 @@ $no = 1;
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark"><?= $data=='user'? 'Kelola User':'' ?></h1>
+            <h1 class="m-0 text-dark"><?= $data=='user'? 'Kelola User':'Saran Masukan' ?></h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
               <?php if($data=='user') :?>
                 <li class="breadcrumb-item active">List User</li>
+              <?php elseif($data=='pesan') :?>
+                <li class="breadcrumb-item active">Saran Masukan</li>
               <?php else :?>
               <?php endif; ?>
             </ol>
@@ -81,14 +85,16 @@ $no = 1;
                 <?php if($data=='user') :?>
                   <h5 class="my-auto">List User</h5>
                   <a href="insert.php?data=user" class="btn btn-sm btn-primary">+ Tambah User</a>
+                <?php elseif($data=='pesan') :?>
+                  <h5 class="my-auto">List Saran Masukan</h5>
                 <?php else :?>
                 <?php endif; ?>
                 </div>
               </div>
               <div class="card-body">
 
-                <!-- tabel list data user -->
                 <?php if($data == 'user') :?>
+                  <!-- tabel list data user -->
                 <table id="example2" class="table table-bordered table-hover" >
                   <thead>
                   <tr class="text-center">
@@ -119,6 +125,34 @@ $no = 1;
                   <?php endforeach; ?>
                   </tbody>
                 </table>
+                
+                <?php elseif($data=='pesan') :?>
+                <!-- list pesan saran dan masukan -->
+                <table id="example2" class="table table-bordered table-hover" >
+                  <thead>
+                  <tr class="text-center">
+                    <th>No.</th>
+                    <th>Subject</th>
+                    <th>Pesan</th>
+                  </tr>
+                  </thead>
+                  <tbody class="text-sm-center">
+                  <?php foreach($pesan as $pesan)  :?>
+                  <tr>
+                    <td class="font-weight-bold"><?= $no; ?></td>
+                    <td ><?= $pesan['subject']; ?></td>
+                    <td style="text-align: left;"><?= $pesan['pesan']; ?> <br> <br>
+                      <small class="font-italic text-muted">Dikirim pada : <?= strftime("%A, %d %B %Y (%H:%I:%S",$pesan['waktu_submit']); ?> WIB) </small>
+                    </td>
+                  </tr>
+                  <?php $no++ ?>
+                  <?php endforeach; ?>
+                  </tbody>
+                </table>
+                
+
+                <?php else: ?>
+
                 <?php endif; ?>
               </div>
             </div> 
@@ -177,10 +211,6 @@ $no = 1;
       "info": true,
       "autoWidth": false,
       "responsive": true,
-      "columnDefs": [{
-                    "orderable": false,
-                    "targets": [6]
-                }]
     });
   });
 </script>    

@@ -135,6 +135,18 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
               </p>
             </a>
           </li>
+
+          <!-- menu saran masukan -->
+
+          <li class="nav-item"> 
+            <a href="list.php?data=pesan" class="nav-link <?= ($data=='pesan')? 'active' : '' ?>">
+              <i class="nav-icon fa fa-envelope"></i>
+              <p>
+                Saran Masukan
+              </p>
+            </a>
+          </li>
+
           <?php endif; ?>
 
           <li class="nav-item has-treeview <?= ($queue=='administrasi' || $queue=='poli')? 'menu-open' : '' ?>"> 
