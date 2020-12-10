@@ -56,7 +56,7 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
         </div>
         <div class="info my-auto">
           <a href="" class="d-block"><?= $_SESSION['user_name']; ?></a>
-          <small class="text-muted" style="text-transform: capitalize;"><?= $_SESSION['role']; ?></small>
+          <small class="text-muted" style="text-transform: capitalize;"><?= $_SESSION['role']=="dokter"?$_SESSION['role']." ".$list_poli_klinik[0]['nama_unit']:$_SESSION['role']; ?></small>
         </div>
       </div>
 
@@ -161,7 +161,7 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
 
               <?php foreach($list_poli_klinik as $poli) :?>
               <li class="nav-item"> 
-                <a href="queue.php?queue=poli&data=<?= strtolower($poli['nama_unit']); ?>&id=<?= $poli['id']; ?>" class="nav-link <?= ($data == strtolower($poli['nama_unit']))? 'active' : '' ?>">
+                <a href="queue.php?queue=poli&data=<?= strtolower($poli['nama_unit']); ?>" class="nav-link <?= ($data == strtolower($poli['nama_unit']))? 'active' : '' ?>">
                   <i class="fas fa-clinic-medical nav-icon"></i>
                   <p>
                     Poli <?= $poli['nama_unit']; ?>

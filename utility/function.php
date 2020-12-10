@@ -195,7 +195,7 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         $id_jadwal = $data["id_jadwal"];
         $kd_pendaftaran = uniqid('',true);
         $tanggal_periksa = date("Y-m-d",time());
-        $verifikasi_pendaftaran = "Sudah Verifikasi";
+        $verifikasi_pendaftaran = "Terverifikasi";
 
         $no_antrian_administrasi = insertAntrianAdministrasi($tanggal_periksa);
         $no_antrian_poli = insertAntrianPoli($tanggal_periksa,$id_jadwal);
@@ -390,31 +390,32 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         )";
 
         if(mysqli_query($conn,$query)){
-            $last_id = mysqli_insert_id($conn);
-            return insertTableCounter($last_id);
-        }else{
-            return -1;
-        }
-
-    }
-
-    function insertTableCounter($id_poli_klinik){
-        global $conn;
-
-        $query = "INSERT INTO tb_counter VALUES(
-            '',
-            $id_poli_klinik,
-            0,
-            1,
-            '0000-00-00'
-        )";
-
-        if(mysqli_query($conn,$query)){
+            // $last_id = mysqli_insert_id($conn);
+            // return insertTableCounter($last_id);
             return mysqli_affected_rows($conn);
         }else{
             return -1;
         }
+
     }
+
+    // function insertTableCounter($id_poli_klinik){
+    //     global $conn;
+
+    //     $query = "INSERT INTO tb_counter VALUES(
+    //         '',
+    //         $id_poli_klinik,
+    //         0,
+    //         1,
+    //         '0000-00-00'
+    //     )";
+
+    //     if(mysqli_query($conn,$query)){
+    //         return mysqli_affected_rows($conn);
+    //     }else{
+    //         return -1;
+    //     }
+    // }
 
     function insertJadwalPoliKlinik($data){
         global $conn;

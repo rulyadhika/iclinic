@@ -305,7 +305,7 @@ $data = $_GET['data'];
                         <div class="input-group">
                           <select class="form-control" id="gol_darah" name="gol_darah" required>
                             <option hidden="" value="">-- Pilih Golongan Darah --</option>
-                            <option value=="Tidak Tau">Tidak Tau</option>
+                            <option value="belum_tahu">Belum tahu</option>
                             <option value="A">A</option>
                             <option value="B">B</option>
                             <option value="AB">AB</option>

@@ -27,11 +27,13 @@ define("root",true);
   }elseif(isset($_POST['cek'])){
     //handler tombol cek data pasien
     $qr_code = $_POST['qr_code'];
+    $tanggal_hari_ini = date("Y-m-d",time());
+
     $data_pasien = select("SELECT tb_unit.nama_unit, tb_pendaftaran_online.*,tb_pendaftaran_online.id as id_pendaftaran,
                           tb_akun_user.email, tb_biodata_user.* FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit 
                           JOIN tb_pendaftaran_online ON tb_jadwal.id = tb_pendaftaran_online.id_jadwal JOIN tb_akun_user
                           ON tb_pendaftaran_online.id_user = tb_akun_user.id JOIN tb_biodata_user 
-                          ON tb_akun_user.id = tb_biodata_user.id_akun WHERE kd_pendaftaran = '$qr_code'");
+                          ON tb_akun_user.id = tb_biodata_user.id_akun WHERE kd_pendaftaran = '$qr_code' AND tb_pendaftaran_online.tanggal_periksa >= '$tanggal_hari_ini'");
     if(count($data_pasien)>0){
       echo json_encode($data_pasien[0]);die;
     }else{
@@ -42,13 +44,9 @@ define("root",true);
 //menerima request parameter dari url
 $queue = $_GET['queue'];
 $data = $_GET['data'];
-$no = 1;
 
     //data handler
-    if($queue == 'poli'){
-        $id_unit = $_GET['id'];
-        $nomor_antrian_terakhir = select("SELECT nomor_antrian FROM tb_counter WHERE id_unit = $id_unit")[0]['nomor_antrian'];
-    }else{
+    if($queue == 'administrasi'){
         //untuk keperluan antrian
         $id_unit = 1;
         $nomor_antrian_terakhir = select("SELECT nomor_antrian FROM tb_counter WHERE id_unit = 1")[0]['nomor_antrian'];
@@ -63,6 +61,33 @@ $no = 1;
         //loket
         $id_akun_adm = $_SESSION['user_id'];
         $nomer_loket = select("SELECT no_loket FROM tb_loket_administrasi WHERE id_assigned_user = $id_akun_adm")[0]['no_loket'];
+    }elseif($queue== 'poli'){
+      $id_akun_dokter = $_SESSION['user_id'];
+      $id_poli = select("SELECT id FROM tb_unit WHERE id_akun_dokter = $id_akun_dokter")[0]['id'];
+      $tanggal_hari_ini = date("Y-m-d",time());
+
+      // data untuk tabel daftar pasien
+      $data_pasien_online_hari_ini = select("SELECT tb_pendaftaran_online.no_antrian_poli,tb_pendaftaran_online.verifikasi_administrasi,tb_pendaftaran_online.jenis_pembiayaan,
+      tb_biodata_user.nama,tb_biodata_user.jenis_kelamin,tb_biodata_user.tanggal_lahir FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit JOIN
+      tb_pendaftaran_online ON tb_jadwal.id = tb_pendaftaran_online.id_jadwal JOIN tb_akun_user 
+      ON tb_pendaftaran_online.id_user = tb_akun_user.id JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_unit.id = $id_poli
+      AND tb_pendaftaran_online.tanggal_periksa = '$tanggal_hari_ini'");
+
+      $data_pasien_offline_hari_ini = select("SELECT tb_pendaftaran_offline.no_antrian_poli,tb_pendaftaran_offline.nama,tb_pendaftaran_offline.no_bpjs,
+      tb_pendaftaran_offline.jenis_kelamin,tb_pendaftaran_offline.verifikasi_administrasi,tb_pendaftaran_offline.tanggal_lahir FROM tb_unit JOIN tb_jadwal ON
+      tb_unit.id = tb_jadwal.id_unit JOIN tb_pendaftaran_offline ON tb_jadwal.id = tb_pendaftaran_offline.id_jadwal
+      WHERE tb_unit.id = $id_poli AND tb_pendaftaran_offline.tanggal_periksa = '$tanggal_hari_ini'");
+
+      //menambahkan data jenis pembiayaan pada data pasien offline berdasar data nomor bpjs
+      for($i=0;$i<count($data_pasien_offline_hari_ini);$i++){
+        if($data_pasien_offline_hari_ini[$i]['no_bpjs']==NULL){
+          $data_pasien_offline_hari_ini[$i]['jenis_pembiayaan'] = "Umum";
+        }else{
+          $data_pasien_offline_hari_ini[$i]['jenis_pembiayaan'] = "BPJS";
+        }
+      }
+      
+      $data_pasien_hari_ini = array_merge($data_pasien_online_hari_ini,$data_pasien_offline_hari_ini);
     }
 
 
@@ -81,6 +106,9 @@ $no = 1;
   <link rel="stylesheet" href="../src/plugins/fontawesome-free/css/all.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="../src/css/adminlte.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="../src/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../src/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <!-- Google Font: Source Sans Pro -->
   <!-- <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet"> -->
 </head>
@@ -98,7 +126,7 @@ $no = 1;
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark" style="text-transform: capitalize;"><?= $queue=='poli'? 'Poli '.$data :'Administrasi' ?> Loket <?= isset($nomer_loket)?$nomer_loket:'1'; ?></h1>
+            <h1 class="m-0 text-dark" style="text-transform: capitalize;"><?= $queue=='poli'? 'Poli '.$data :'Administrasi' ?> <?= isset($nomer_loket)?'Loket '.$nomer_loket:''; ?></h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -118,12 +146,14 @@ $no = 1;
     <!-- Main content -->
     <div class="content">
       <div class="container-fluid">
+
+      <?php if($queue == 'administrasi' ) :?>
         <div class="row">
           <div class="col-md-8">
             <div class="card verifikasi-pendaftaran-box">
               <div class="card-header">
                 <div class="d-flex justify-content-between ">
-                  <h5 class="my-auto"><?= $queue=='poli'?'Cek Kode Pendaftaran':'Verifikasi Pendaftaran Online'; ?></h5>
+                  <h5 class="my-auto">Verifikasi Pendaftaran Online</h5>
                 </div>
               </div>
               <div class="card-body">
@@ -191,7 +221,7 @@ $no = 1;
             </div> 
           </div>
 
-          <?php if($queue == 'administrasi' ) :?>
+          <!-- section tambah pendaftaran pasien -->
           <div class="col-12">
             <div class="card ">
               <div class="card-header">
@@ -293,10 +323,54 @@ $no = 1;
               </div>
             </div> 
           </div>
+        </div>
 
-          <?php endif ;?>
+      <?php elseif($queue=='poli') :?>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h5 class="my-auto">Daftar Pasien Hari Ini</h5>
+                </div>
+              </div>
+              <div class="card-body">
+
+                <table id="daftarpasien" class="table table-bordered table-hover" >
+                  <thead>
+                    <tr class="text-center">
+                      <th>No Antrian</th>
+                      <th>Nama Pasien</th>
+                      <th>Umur</th>
+                      <th>Jenis Kelamin</th>
+                      <th>Jenis Pembiayaan</th>
+                      <th>Verifikasi Administrasi</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-sm-center">
+                    <?php foreach($data_pasien_hari_ini as $data_pasien)  :?>
+                    <tr>
+                      <td class="font-weight-bold"><?= $data_pasien['no_antrian_poli']; ?></td>
+                      <td><?= $data_pasien['nama']; ?></td>
+                      <td><?php $today = new DateTime("today");
+                                $birthDate = new DateTime($data_pasien['tanggal_lahir']);
+                                echo $today->diff($birthDate)->y." Tahun ".$today->diff($birthDate)->m." Bulan" ?></td>
+                      <td><?= $data_pasien['jenis_kelamin']; ?></td>
+                      <td class="text-<?= $data_pasien['jenis_pembiayaan']=='BPJS'?'success':'primary' ?>"><?= $data_pasien['jenis_pembiayaan']; ?></td>
+                      <td class="text-<?= $data_pasien['verifikasi_administrasi']=="Terverifikasi"?'success':'danger' ?>"><?= $data_pasien['verifikasi_administrasi']; ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+
+              </div>
+            </div> 
+          </div>
 
         </div>
+        
+      <?php endif ;?>
         <!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
@@ -336,6 +410,11 @@ $no = 1;
 <script src="../src/js/adminlte.min.js"></script>
 <!-- sweetalert -->
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <!-- DataTables -->
+<script src="../src/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../src/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../src/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../src/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
 
 <?php if($_GET['queue']=='administrasi') :?>
   <!-- alert popUp area -->
@@ -372,7 +451,6 @@ $no = 1;
 
 
   <!-- update verifikasi pendaftaran pasien handler-->
-    
   <script>
     $(".verifikasi-pendaftaran-box").on("click",function(e){
       if(e.target.classList.contains("verifikasiPasienBtn")){
@@ -395,9 +473,8 @@ $no = 1;
       }
     })
   </script>
-  
-<?php endif; ?>
 
+<!-- untuk counter tambah antrian -->
 <script>
     const sound_in = new Audio('../src/audio/antrian/in.wav');
     const sound_out = new Audio('../src/audio/antrian/out.wav');
@@ -420,7 +497,7 @@ $no = 1;
     const angka = ["",satu,dua,tiga,empat,lima,enam,tujuh,delapan,sembilan,sepuluh,sebelas];
 
     let count;
-    let no_loket = <?= $queue=='poli'?'1':$nomer_loket; ?>; //session no loket login user 
+    let no_loket = <?= $nomer_loket; ?>; //session no loket login user admin
     
     $(".next-btn").on("click",()=>{
         // next-btn antrian handler
@@ -487,6 +564,7 @@ $no = 1;
     
 </script>
 
+<!-- script untuk menampilkan data lengkap pasien dengan qrcode-->
 <script>
   $(".cek-btn").on("click",()=>{
     let code = $("input[name=kd_pendaftaran_input]").val();
@@ -604,6 +682,23 @@ $no = 1;
 
   })
 </script>
+
+<?php elseif($queue=='poli') :?>
+  <!-- script untuk tabel daftar pasien -->
+  <script>
+    $(function () {
+      $('#daftarpasien').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+      });
+    });
+  </script>
+<?php endif; ?>
 
 </body>
 </html>
