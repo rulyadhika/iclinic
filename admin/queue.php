@@ -66,6 +66,22 @@ $data = $_GET['data'];
         }
 
         $nomer_loket = select("SELECT no_loket FROM tb_loket_administrasi WHERE id_assigned_user = $id_akun_adm")[0]['no_loket'];
+
+        if(isset($_POST['refresh'])){
+          // megambil data jumlah pasien hari ini
+          $pasienTerverifikasiOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Terverifikasi'")[0]['COUNT(id)'];
+          $pasienTerverifikasiOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Terverifikasi'")[0]['COUNT(id)'];
+          $pasienTerverifikasi = $pasienTerverifikasiOffline + $pasienTerverifikasiOnline;
+
+          $pasienBelumVerifikasiOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Belum Verifikasi'")[0]['COUNT(id)'];
+          $pasienBelumVerifikasiOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Belum Verifikasi'")[0]['COUNT(id)'];
+          $pasienBelumVerifikasi = $pasienBelumVerifikasiOffline + $pasienBelumVerifikasiOnline;
+
+          $total_antrian_administrasi = select("SELECT COUNT(id) FROM tb_antrian_administrasi WHERE tanggal_antrian = CURRENT_DATE()")[0]['COUNT(id)'];
+          
+          echo json_encode(["qTotal"=>$total_antrian_administrasi,"pasienTerverifikasi"=>$pasienTerverifikasi,"pasienBelumVerifikasi"=>$pasienBelumVerifikasi]);die;
+        }
+
     }elseif($queue== 'poli'){
       $id_akun_dokter = $_SESSION['user_id'];
 
@@ -123,6 +139,11 @@ $data = $_GET['data'];
   <link rel="stylesheet" href="../src/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
   <!-- Google Font: Source Sans Pro -->
   <!-- <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet"> -->
+  <style>
+      .loading{
+          width: 50px;
+      }
+  </style>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -207,11 +228,13 @@ $data = $_GET['data'];
               </div>
               <div class="card-body">
                 <div class="info-box">
-                  <span class="info-box-icon bg-success elevation-1"><i class="fas fa-clinic-medical"></i></span>
+                  <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-clinic-medical"></i></span>
                   <div class="info-box-content">
-                    <span class="info-box-text">Pasien BPJS</span>
+                    <span class="info-box-text">Total Antrian Terdaftar</span>
                     <span class="info-box-number">
-                      10
+                      <span class="antrian_terdaftar">
+                        <img src="../src/images/Spinner-1s-200px.svg" alt="" class="loading">
+                      </span>
                       <small>Pasien</small>
                     </span>
                   </div>
@@ -219,16 +242,33 @@ $data = $_GET['data'];
                 </div>
 
                 <div class="info-box">
-                  <span class="info-box-icon bg-info elevation-1"><i class="fas fa-clinic-medical"></i></span>
+                  <span class="info-box-icon bg-success elevation-1"><i class="fas fa-clinic-medical"></i></span>
                   <div class="info-box-content">
-                    <span class="info-box-text">Pasien Umum</span>
+                    <span class="info-box-text">Pasien Terverifikasi</span>
                     <span class="info-box-number">
-                      10
+                      <span class="pasien_terverifikasi">
+                        <img src="../src/images/Spinner-1s-200px.svg" alt="" class="loading">
+                      </span>
                       <small>Pasien</small>
                     </span>
                   </div>
                   <!-- /.info-box-content -->
                 </div>
+
+                <div class="info-box">
+                  <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-clinic-medical"></i></span>
+                  <div class="info-box-content">
+                    <span class="info-box-text">Pasien Belum Terverifikasi</span>
+                    <span class="info-box-number">
+                      <span class="pasien_belum_verifikasi">
+                        <img src="../src/images/Spinner-1s-200px.svg" alt="" class="loading">
+                      </span>
+                      <small>Pasien</small>
+                    </span>
+                  </div>
+                  <!-- /.info-box-content -->
+                </div>
+
               </div>
             </div> 
           </div>
@@ -693,6 +733,27 @@ $data = $_GET['data'];
     }});
 
   })
+</script>
+
+<script>
+  // script untuk refresh info antrian
+
+  setInterval(()=>{
+    $.ajax({
+      url: "queue.php?queue=administrasi&data=adm&id=<?= $id_akun_adm; ?>",
+      type : "POST",
+      data : { 
+              refresh : true,
+          }, 
+      dataType : "JSON",
+      success: function(result){
+        $(".antrian_terdaftar").text(result.qTotal);
+        $(".pasien_terverifikasi").text(result.pasienTerverifikasi);
+        $(".pasien_belum_verifikasi").text(result.pasienBelumVerifikasi);
+      }
+    })
+  },7000)
+
 </script>
 
 <?php elseif($queue=='poli') :?>
