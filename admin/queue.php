@@ -58,12 +58,24 @@ $data = $_GET['data'];
                                   JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_jadwal.hari_praktek = '$hari_ini' 
                                   AND tb_jadwal.status_jadwal = 'Aktif'");
 
-        //loket
-        $id_akun_adm = $_SESSION['user_id'];
+        // pengambilan id akun yg di assigned-kan ke loket
+        if($_SESSION['role']=='kepala klinik' || $_SESSION['role']=='dev'){
+          $id_akun_adm = $_GET['id'];
+        }else{
+          $id_akun_adm = $_SESSION['user_id'];
+        }
+
         $nomer_loket = select("SELECT no_loket FROM tb_loket_administrasi WHERE id_assigned_user = $id_akun_adm")[0]['no_loket'];
     }elseif($queue== 'poli'){
       $id_akun_dokter = $_SESSION['user_id'];
-      $id_poli = select("SELECT id FROM tb_unit WHERE id_akun_dokter = $id_akun_dokter")[0]['id'];
+
+      // pengambilan id poli
+      if($_SESSION['role']=='kepala klinik' || $_SESSION['role']=='dev'){
+        $id_poli = $_GET['id'];
+      }else{
+        $id_poli = select("SELECT id FROM tb_unit WHERE id_akun_dokter = $id_akun_dokter")[0]['id'];
+      }
+      
       $tanggal_hari_ini = date("Y-m-d",time());
 
       // data untuk tabel daftar pasien

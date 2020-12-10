@@ -24,7 +24,11 @@ if(isset($_GET['queue'])){
 
 //untuk list menu antrian apa saja yg akan ditampilkan
 if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
+  // mengambil semua list poli
   $list_poli_klinik = select("SELECT id,nama_unit FROM tb_unit WHERE id>1");
+  
+  // mengambil semua list loket administrasi
+  $list_loket_administrasi = select("SELECT id_assigned_user FROM tb_loket_administrasi");
 }elseif($_SESSION['role'] === 'petugas administrasi'){
   $list_poli_klinik = [];
 
@@ -143,6 +147,7 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
             </a>
             <ul class="nav nav-treeview">
             
+              <!-- kelola antrian administrasi -->
               <?php if($_SESSION['role'] == 'petugas administrasi') :?>
                 <li class="nav-item">
                   <?php if(count($akun_adm_assigned)>0) :?>
@@ -157,11 +162,23 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
                     </a>
                   <?php endif; ?>
                 </li>
-            <?php endif; ?>
+              
+              <?php elseif($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik') :?>
+                <!-- list semua loket administrasi -->
+                <?php for($i=0;$i<count($list_loket_administrasi);$i++) :?>
+                  <li class="nav-item">
+                      <a href="queue.php?queue=administrasi&data=<?= $nomer = $i + 1; ?>&id=<?= $list_loket_administrasi[$i]['id_assigned_user']; ?>" class="nav-link <?= ($queue=='administrasi' && $data == ($nomer = $i + 1))? 'active' : '' ?>">
+                        <i class="fa fa-home nav-icon"></i>
+                        <p>Administrasi <?= $nomer = $i + 1; ?></p>
+                      </a>
+                  </li>
+                <?php endfor; ?>
+
+              <?php endif; ?>
 
               <?php foreach($list_poli_klinik as $poli) :?>
               <li class="nav-item"> 
-                <a href="queue.php?queue=poli&data=<?= strtolower($poli['nama_unit']); ?>" class="nav-link <?= ($data == strtolower($poli['nama_unit']))? 'active' : '' ?>">
+                <a href="queue.php?queue=poli&data=<?= strtolower($poli['nama_unit']); ?>&id=<?= ($poli['id']); ?>" class="nav-link <?= ($data == strtolower($poli['nama_unit']))? 'active' : '' ?>">
                   <i class="fas fa-clinic-medical nav-icon"></i>
                   <p>
                     Poli <?= $poli['nama_unit']; ?>
