@@ -319,11 +319,11 @@ $data = $_GET['data'];
                     <label class="col-sm-2 col-form-label">Jenis Kelamin </label>
                     <div class="col-sm-10 d-flex flex-row">
                         <div class="form-check my-auto mx-2">
-                          <input class="form-check-input" type="radio" name="jenis_kelamin" id="laki - laki" value="laki - laki" required>
+                          <input class="form-check-input" type="radio" name="jenis_kelamin" id="laki - laki" value="Laki - laki" required>
                           <label class="form-check-label" for="laki - laki">Laki - laki</label>
                         </div>
                         <div class="form-check my-auto mx-2">
-                          <input class="form-check-input" type="radio" name="jenis_kelamin" id="perempuan" value="perempuan">
+                          <input class="form-check-input" type="radio" name="jenis_kelamin" id="perempuan" value="Perempuan">
                           <label class="form-check-label" for="perempuan">Perempuan</label>
                         </div>
                     </div>

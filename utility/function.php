@@ -63,7 +63,7 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
 
         //memastikan jika register akun via dashboard admin
         if(isset($_SESSION['login'])){
-            if($_SESSION['role']!='pasien' || $_SESSION['role']!='dokter'){
+            if($_SESSION['role']=='kepala klinik' || $_SESSION['role']=='dev'){
                 $user_role = $data['role'];
             }
         }
@@ -158,22 +158,20 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         if(mysqli_query($conn,$query)){
             //update role
             //memastikan jika register akun via dashboard admin
-            if(isset($_SESSION['login'])){
-                if($_SESSION['role']!='pasien' || $_SESSION['role']!='dokter'){
-                    $user_role = $data['role'];
+            if($_SESSION['role']=='kepala klinik' || $_SESSION['role']=='dev'){
+                $user_role = $data['role'];
 
-                    mysqli_query($conn,"UPDATE tb_akun_user SET user_role = '$user_role' WHERE id = $id_user");
+                mysqli_query($conn,"UPDATE tb_akun_user SET user_role = '$user_role' WHERE id = $id_user");
 
-                    if(!mysqli_affected_rows($conn)>0){
-                        return 1;
-                    }
+                if(!mysqli_affected_rows($conn)>0){
+                    return 1;
                 }
             }
-            
+
             return mysqli_affected_rows($conn);
-        };
-
-
+        }else{
+            return -1;
+        }
     }
 
     function insertPendaftaranPeriksaOffline($data){
@@ -502,5 +500,35 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         return mysqli_affected_rows($conn);
     }
 
+    function ubahPassword($data){
+        global $conn;
 
+        $user_id = $data['user_id'];
+        $password_lama = $data['password_lama'];
+        $password1 = $data['password_1'];
+        $password2 = $data['password_2'];
+
+        //mengambil password lama dari db
+        $password_old = select("SELECT password FROM tb_akun_user WHERE id = $user_id")[0]["password"];
+        
+        if(password_verify($password_lama,$password_old)){
+            if(strlen($password1)<8){
+                return 'password minimal 8 karakter';
+            }else{
+                if($password1==$password2){
+                    $password = password_hash($password1,PASSWORD_DEFAULT);
+
+                    mysqli_query($conn,"UPDATE tb_akun_user SET password = '$password' WHERE id = $user_id");
+
+                    return mysqli_affected_rows($conn);
+                }else{
+                    return "password tidak sama";
+                }
+            }
+
+        }else{
+            return "password lama salah";
+        }
+
+    }
 ?>

@@ -1,9 +1,21 @@
 <?php 
 session_start();
+include "../utility/function.php";
+
 define("root",true);
 if (!isset($_SESSION['login'])){
-    header("location: ../login.php");
+    header("location: ../login.php");die;
 }
+
+if(isset($_POST['simpan'])){
+    $result = updateDataUser($_POST);
+}
+
+$id_user = $_SESSION['user_id'];
+
+$data_user = select("SELECT tb_biodata_user.*,tb_akun_user.email FROM tb_biodata_user JOIN tb_akun_user ON
+                    tb_biodata_user.id_akun = tb_akun_user.id WHERE tb_akun_user.id = $id_user")[0];
+
 ?>
 
 <!DOCTYPE html>
@@ -26,58 +38,81 @@ if (!isset($_SESSION['login'])){
             <h3>Ubah Profil</h3>
         </div>
         <div class="content">
-            <div class="grid-form">
-                <div class="form-group">
-                    <label for="nama_pasien">Nama Lengkap</label>
-                    <input type="text" name="nama_pasien" required>
+            <form action="" method="POST">
+                <input type="hidden" name="user_id" value="<?= $id_user; ?>">
+                <div class="grid-form">
+                    <div class="form-group">
+                        <label for="nama_pasien">Nama Lengkap</label>
+                        <input type="text" name="nama_pasien" value="<?= $data_user['nama']; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nik_nama_pasien">No. KTP / NIK</label>
+                        <input type="number" name="nik_pasien" value="<?= $data_user['nik']; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nomor_bpjs">No. BPJS (Bila Punya)</label>
+                        <input type="number" name="nomor_bpjs" value="<?= $data_user['no_bpjs']; ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="jenis_kelamin">Jenis Kelamin</label>
+                        <select name="jenis_kelamin" id="jenis_kelamin" required>
+                            <option hidden="" value="">--Pilih Jenis Kelamin--</option>
+                            <option value="Laki - laki" <?= $data_user['jenis_kelamin']=="Laki - laki"?'selected':''; ?> >Laki-laki</option>
+                            <option value="Perempuan" <?= $data_user['jenis_kelamin']=="Perempuan"?'selected':''; ?> >Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggal_lahir">Tanggal Lahir</label>
+                        <input type="date" name="tanggal_lahir" value="<?= $data_user['tanggal_lahir']; ?>" required>
+                    </div>
+                    
+                    <div class="form_group">
+                        <label for="gol_darah">Golongan Darah</label>
+                        <select name="gol_darah" id="gol_darah" required>
+                            <option value="Belum Tahu" <?= $data_user['gol_darah']=="Belum Tahu"?'selected':''; ?>>Belum tau</option>
+                            <option value="A" <?= $data_user['gol_darah']=="A"?'selected':''; ?> >A</option>
+                            <option value="B" <?= $data_user['gol_darah']=="B"?'selected':''; ?> >B</option>
+                            <option value="AB" <?= $data_user['gol_darah']=="AB"?'selected':''; ?> >AB</option>
+                            <option value="O" <?= $data_user['gol_darah']=="O"?'selected':''; ?> >O</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="alamat">Alamat Rumah</label>
+                        <input type="text" class="lebar"name="alamat" value="<?= $data_user['alamat']; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="no_hp">Nomor HP</label>
+                        <input type="number" name="no_hp" value="0<?= $data_user['no_hp']; ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" value="<?= $data_user['email']; ?>" disabled>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="nik_nama_pasien">No. KTP / NIK</label>
-                    <input type="text" name="nik_nama_pasien">
-                </div>
-                <div class="form-group">
-                    <label for="nomor_bpjs">No. BPJS (Bila Punya)</label>
-                    <input type="text" name="nomor_bpjs">
-                </div>
-                <div class="form-group">
-                    <label for="jenis_kelamin">Jenis Kelamin</label>
-                    <select name="jenis_kelamin" id="jenis_kelamin" required>
-                        <option hidden="" value="">--Pilih Jenis Kelamin--</option>
-                        <option value="pria">Laki-laki</option>
-                        <option value="wanita">Perempuan</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="tanggal_lahir">Tanggal Lahir</label>
-                    <input type="date" name="tanggal_lahir" required>
-                </div>
-                
-                <div class="form_group">
-                    <label for="gol_darah">Golongan Darah</label>
-                    <select name="gol_darah" id="gol_darah" required>
-                        <option value="belum_tahu">Belum tahu</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="AB">AB</option>
-                        <option value="O">O</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="alamat">Alamat Rumah</label>
-                    <input type="text" class="lebar"name="alamat" required>
-                </div>
-                <div class="form-group">
-                    <label for="no_hp">Nomor HP</label>
-                    <input type="text" name="no_hp">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" name="email" required>
-                </div>
-            </div>
-            <input type="submit" class="submit-btn" value="Simpan">
+                <input type="submit" class="submit-btn" value="Simpan" name="simpan">
+            </form>
         </div>
     </div>
+
+    <!-- sweetalert -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- alert popUp area -->
+    <?php if(isset($result)):?>
+          <script>
+              <?php if($result==(1)) :?>
+                  swal('Berhasil!', 'Data Berhasil Diubah', 'success')
+                  .then((value) => {
+                      window.location.href = 'ubah-profil.php';
+                  });
+              <?php else :?>
+                  swal('Error!', 'Data Gagal Diubah', 'error')
+                  .then((value) => {
+                      window.location.href = 'ubah-profil.php';
+                  });
+              <?php endif; ?>
+          </script> 
+    <?php endif; ?>
+
     <script>
         $(document).ready(function(){
             $(".bar-icon, .close-icon").click(function(){

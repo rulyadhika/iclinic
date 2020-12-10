@@ -56,7 +56,7 @@ if(isset($_POST['register'])){
                         <select name="jenis_kelamin" id="jenis_kelamin" required>
                             <option hidden="" value="">--Pilih Jenis Kelamin--</option>
                             <option value="Laki - laki">Laki-laki</option>
-                            <option value="perempuan">Perempuan</option>
+                            <option value="Perempuan">Perempuan</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -68,7 +68,7 @@ if(isset($_POST['register'])){
                         <label for="gol_darah">Golongan Darah</label>
                         <select name="gol_darah" id="gol_darah" required>
                             <option hidden="" value="">--Pilih Golongan Darah --</option>
-                            <option value="belum_tahu">Belum tahu</option>
+                            <option value="Belum Tahu">Belum Tahu</option>
                             <option value="A">A</option>
                             <option value="B">B</option>
                             <option value="AB">AB</option>

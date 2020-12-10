@@ -116,7 +116,7 @@ if(isset($_POST['refresh'])){
                             <td><?= strftime("%d-%m-%Y",strtotime($riwayat['tanggal_periksa'])); ?></td>
                             <td><?= $riwayat['nama_unit']; ?></td>
                             <td style="text-align:center"><?= $riwayat['no_antrian_administrasi']; ?></td>
-                            <td style="text-align:center"><a style="color:#008000;" href="utility/print.php?reg=online&data-id=<?= $riwayat['id']; ?>">Cetak Pdf</a></td>
+                            <td style="text-align:center"><a target="_blank" style="color:#008000;" href="utility/print.php?reg=online&data-id=<?= $riwayat['id']; ?>">Cetak Pdf</a></td>
                         </tr>
                         <?php endforeach; ?>  
                     </table>

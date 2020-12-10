@@ -53,7 +53,7 @@ if (!isset($_SESSION['login'])){
                     <td style="text-align:center"><?= $riwayat['no_antrian_poli']; ?></td>
                     <td style="text-align:center">
                         <?php if($riwayat['tanggal_periksa']>=date("Y-m-d",time())) :?>
-                            <a href="../utility/print.php?reg=online&data-id=<?= $riwayat['id'] ?>" style="color:#008000">Cetak Pdf</a>
+                            <a target="_blank" href="../utility/print.php?reg=online&data-id=<?= $riwayat['id'] ?>" style="color:#008000">Cetak Pdf</a>
                         <?php else :?>
                             -
                         <?php endif; ?>
