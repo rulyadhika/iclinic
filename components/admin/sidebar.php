@@ -48,7 +48,7 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="dashboard.php" class="brand-link text-center">
-      <span class="brand-text font-weight-light">Klinik Soedirman</span>
+      <span class="brand-text font-weight-light">I-Clinic Unsoed</span>
     </a>
 
     <!-- Sidebar -->

@@ -9,13 +9,15 @@ function showTime() {
   let minutes = calender.getMinutes();
   let second = calender.getSeconds();
 
-  // if (hour >= 0 && hour < 12) {
-  //   waktu.innerHTML = "PAGI";
-  // } else if (hour > 12 && hour < 18) {
-  //   waktu.innerHTML = "SIANG";
-  // } else {
-  //   waktu.innerHTML = "MALAM";
-  // }
+  if(waktu != undefined){
+    if (hour >= 0 && hour < 12) {
+      waktu.innerHTML = "PAGI";
+    } else if (hour > 12 && hour < 18) {
+      waktu.innerHTML = "SIANG";
+    } else {
+      waktu.innerHTML = "MALAM";
+    }
+  }
 
   clockDisplay.innerHTML = `${hour} : ${minutes} : ${second} WIB`;
   dateDisplay.innerHTML = date;

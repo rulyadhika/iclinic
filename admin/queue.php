@@ -488,12 +488,12 @@ $data = $_GET['data'];
                   window.open("../utility/print.php?reg=offline&data-id=<?= $result[1]; ?>");
               })
               .then(()=>{
-                window.location.href = 'queue.php?queue=administrasi&data=adm';
+                window.location.href = <?= json_encode($_SERVER['REQUEST_URI']); ?>;
               });
           <?php else :?>
               swal('Error!', 'Data Pendaftaran Gagal Ditambahkan', 'error')
               .then((value) => {
-                window.location.href = 'queue.php?queue=administrasi&data=adm';
+                window.location.href = <?= json_encode($_SERVER['REQUEST_URI']); ?>;
               });
           <?php endif; ?>
       </script> 
