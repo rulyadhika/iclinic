@@ -21,9 +21,10 @@ if(isset($_POST['refresh'])){
     $pasienUmumOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND no_bpjs IS NULL")[0]['COUNT(id)'];
     $pasienUmum = $pasienUmumOffline + $pasienUmumOnline;
 
-    $qTotalOffline = $pasienBPJSOffline + $pasienUmumOffline;
-    $qTotalOnline = $pasienBPJSOnline + $pasienUmumOnline;
-    $qTotal = $qTotalOffline + $qTotalOnline;
+    // $qTotalOffline = $pasienBPJSOffline + $pasienUmumOffline;
+    // $qTotalOnline = $pasienBPJSOnline + $pasienUmumOnline;
+    // $qTotal = $qTotalOffline + $qTotalOnline;
+    $qTotal = $qTotal = select("SELECT COUNT(id) FROM tb_antrian_administrasi WHERE tanggal_antrian = CURRENT_DATE()")[0]['COUNT(id)'];
 
     $time_now = date("H:i:s",time());
 

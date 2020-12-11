@@ -63,8 +63,23 @@ include "./function.php";
             $data_pendaftaran = $data_pendaftaran[0];
           }
         }
+      }elseif($_GET['reg']=='adm'){
+        //pengecekan siapa yg mengakses halaman ini
+        if($_SESSION['role']=='dev' || $_SESSION['role']=='antrian adm'){
+          $nomor_antrian = $_GET['data-id'];
+
+          // menambahkan digit '0'
+          if(strlen($nomor_antrian)==1){
+            $nomor_antrian = "00".$nomor_antrian;
+          }elseif(strlen($nomor_antrian)==2){
+            $nomor_antrian = "0".$nomor_antrian;
+          }
+
+        }else{
+          header("location:../index.php");die;  
+        }
       }else{
-        // jika data reg dari url bukan offline/online
+        // jika data reg dari url bukan offline/online/administrasi
         header("location:../index.php");die;
       }
 
@@ -303,8 +318,8 @@ include "./function.php";
               </section>
               <!-- /.content -->
 
-            <?php else :?>
-              <!-- section untuk cetak tiket nomor antrian -->
+            <?php elseif($_GET['reg']=='offline') :?>
+              <!-- section untuk cetak tiket nomor antrian poli -->
 
               <section class="thermal-printer-ticket">
                 <div class="ticket">
@@ -332,6 +347,23 @@ include "./function.php";
                   <p class="text-center mt-2">Nomor antrian berlaku sesuai dengan tanggal dikeluarkan
                 </div>
               </section>
+
+              <?php elseif($_GET['reg']=='adm') :?>
+              <!-- section untuk cetak tiket nomor antrian administrasi -->
+
+              <section class="thermal-printer-ticket">
+                <div class="ticket">
+                  <p class="text-center mb-0">Nomor Antrian Administrasi
+                      <br>I-Clinic Unsoed
+                  </p>
+                  <h1 class="display-1 font-weight-bold text-center mb-0"><?= $nomor_antrian; ?></h1>
+                  <p class="text-center mb-0">Tanggal : <?= strftime("%d/%m/%Y", time()); ?></p>
+                  <p class="text-center mt-2 mb-0">Nomor antrian berlaku sesuai dengan tanggal dikeluarkan.</p>
+                  <p class="text-center mb-2">Terimakasih atas kunjungan anda.</p>
+                  <p class="text-center">Pendaftaran antrian online kunjungi : iclinicunsoed.com</p>
+                </div>
+              </section>
+
             <?php endif; ?>
         </div>
         <!-- thanks to parzibyte.me/blog -->

@@ -14,7 +14,7 @@ if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik'){
                         tb_biodata_user.no_hp,tb_biodata_user.alamat FROM tb_akun_user JOIN tb_biodata_user 
                         ON tb_akun_user.id = tb_biodata_user.id_akun");
     }elseif($data=='pesan'){
-        $pesan = select("SELECT * FROM tb_saran_masukan");
+        $pesan = select("SELECT * FROM tb_saran_masukan ORDER BY waktu_submit DESC");
     }
 }
 
@@ -142,7 +142,7 @@ $no = 1;
                     <td class="font-weight-bold"><?= $no; ?></td>
                     <td ><?= $pesan['subject']; ?></td>
                     <td style="text-align: left;"><?= $pesan['pesan']; ?> <br> <br>
-                      <small class="font-italic text-muted">Dikirim pada : <?= strftime("%A, %d %B %Y (%H:%I:%S",$pesan['waktu_submit']); ?> WIB) </small>
+                      <small class="font-italic text-muted">Dikirim pada : <?= strftime("%A, %d %B %Y",$pesan['waktu_submit'])." (".date("H:i:s",$pesan['waktu_submit']); ?> WIB) </small>
                     </td>
                   </tr>
                   <?php $no++ ?>

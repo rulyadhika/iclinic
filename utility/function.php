@@ -195,13 +195,11 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         $tanggal_periksa = date("Y-m-d",time());
         $verifikasi_pendaftaran = "Terverifikasi";
 
-        $no_antrian_administrasi = insertAntrianAdministrasi($tanggal_periksa);
         $no_antrian_poli = insertAntrianPoli($tanggal_periksa,$id_jadwal);
 
         $query = "INSERT INTO tb_pendaftaran_offline VALUES(
             '',
             $id_jadwal,
-            $no_antrian_administrasi,
             $no_antrian_poli,
             '$tanggal_periksa',
             $nik_pasien,

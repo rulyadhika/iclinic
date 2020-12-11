@@ -69,7 +69,8 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-      
+
+          <?php if($_SESSION['role']!='antrian adm') :?>
           <li class="nav-item">
             <a href="dashboard.php" class="nav-link">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -78,9 +79,22 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
               </p>
             </a>
           </li>
+          <?php endif; ?>
+
+          <?php if($_SESSION['role']=='dev' || $_SESSION['role']=='antrian adm') :?>
+          <!-- menu ambil antrian administrasi -->
+            <li class="nav-item">
+              <a href="ambilantrian.php" class="nav-link">
+                <i class="nav-icon fa fa-ticket-alt"></i>
+                <p>
+                  Ambil Antrian
+                </p>
+              </a>
+            </li>
+          <?php endif; ?>
 
            
-          <?php if(strpos($_SESSION['role'],'dokter')===false) :?> 
+          <?php if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik' || $_SESSION['role']=='petugas administrasi') :?> 
             <!-- jika role user bukan dokter -->
           <li class="nav-item has-treeview <?= ($data=='administrasi' || $data=='poli klinik' || $data=='jadwal poli klinik')? 'menu-open' : '' ?>"> 
             <a href="#" class="nav-link <?= ($data=='administrasi' || $data=='poli klinik' || $data=='jadwal poli klinik')? 'active' : '' ?>">
@@ -149,6 +163,8 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
 
           <?php endif; ?>
 
+          <?php if($_SESSION['role']!='antrian adm') :?>
+          <!-- kelola antrian -->
           <li class="nav-item has-treeview <?= ($queue=='administrasi' || $queue=='poli')? 'menu-open' : '' ?>"> 
             <a href="#" class="nav-link <?= ($queue=='administrasi' || $queue=='poli')? 'active' : '' ?>">
               <i class="nav-icon fa fa-users"></i>
@@ -200,6 +216,7 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
               <?php endforeach; ?>
             </ul>
           </li>
+          <?php endif; ?>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

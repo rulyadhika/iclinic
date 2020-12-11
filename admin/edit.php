@@ -232,11 +232,11 @@ $id = $_GET['id'];
                       <label class="col-sm-2 col-form-label">Jenis Kelamin </label>
                       <div class="col-sm-10 d-flex flex-row">
                           <div class="form-check my-auto mx-2">
-                            <input class="form-check-input" type="radio" name="jenis_kelamin" id="laki - laki" value="laki - laki" <?= $data_user['jenis_kelamin']=='laki - laki'?'checked':''; ?> required>
+                            <input class="form-check-input" type="radio" name="jenis_kelamin" id="laki - laki" value="Laki - laki" <?= $data_user['jenis_kelamin']=='Laki - laki'?'checked':''; ?> required>
                             <label class="form-check-label" for="laki - laki">Laki - laki</label>
                           </div>
                           <div class="form-check my-auto mx-2">
-                            <input class="form-check-input" type="radio" name="jenis_kelamin" id="perempuan" value="perempuan" <?= $data_user['jenis_kelamin']=='perempuan'?'checked':''; ?>>
+                            <input class="form-check-input" type="radio" name="jenis_kelamin" id="perempuan" value="Perempuan" <?= $data_user['jenis_kelamin']=='Perempuan'?'checked':''; ?>>
                             <label class="form-check-label" for="perempuan">Perempuan</label>
                           </div>
                       </div>
@@ -247,7 +247,7 @@ $id = $_GET['id'];
                         <div class="input-group">
                           <select class="form-control" id="gol_darah" name="gol_darah" required>
                             <option hidden="" value="">-- Pilih Golongan Darah --</option>
-                            <option value=="Tidak Tau" <?= $data_user['gol_darah']=='Tidak Tau'?'selected':''; ?> >Tidak Tau</option>
+                            <option value=="Belum Tahu" <?= $data_user['gol_darah']=='Belum Tahu'?'selected':''; ?> >Belum Tahu</option>
                             <option value="A" <?= $data_user['gol_darah']=='A'?'selected':''; ?> >A</option>
                             <option value="B" <?= $data_user['gol_darah']=='B'?'selected':''; ?> >B</option>
                             <option value="AB" <?= $data_user['gol_darah']=='AB'?'selected':''; ?> >AB</option>
