@@ -20,7 +20,7 @@ $data = $_GET['data'];
 if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik'){
   if($data=='user'){
         $list_users = select("SELECT tb_akun_user.id,tb_akun_user.email,tb_akun_user.user_role,tb_biodata_user.nama,
-                        tb_biodata_user.no_hp,tb_biodata_user.alamat FROM tb_akun_user JOIN tb_biodata_user 
+                        tb_biodata_user.no_hp FROM tb_akun_user JOIN tb_biodata_user 
                         ON tb_akun_user.id = tb_biodata_user.id_akun ORDER BY tb_akun_user.user_role ASC");
     }elseif($data=='pesan'){
         $pesan = select("SELECT * FROM tb_saran_masukan ORDER BY waktu_submit DESC");
@@ -40,7 +40,7 @@ $no = 1;
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-  <title>AdminLTE 3 | Starter</title>
+  <title>List Data - Dashboard | I Clinic Unsoed</title>
 
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="../src/plugins/fontawesome-free/css/all.min.css">
@@ -113,7 +113,6 @@ $no = 1;
                     <th>Nama</th>
                     <th>Email</th>
                     <th>No Hp</th>
-                    <th>Alamat</th>
                     <th>Role</th>
                     <th>Action</th>
                   </tr>
@@ -125,7 +124,6 @@ $no = 1;
                     <td><?= $list_user['nama']; ?></td>
                     <td><?= $list_user['email']; ?></td>
                     <td>0<?= $list_user['no_hp']; ?></td>
-                    <td><?= $list_user['alamat']; ?></td>
                     <td style="text-transform: capitalize;"><?= $list_user['user_role']; ?></td>
                     <td class="text-center">
                         <a class="btn btn-info mx-1 my-1 my-md-0" href="edit.php?data=user&id=<?= $list_user['id']; ?>"><i class="fa fa-pencil-alt"></i></a>

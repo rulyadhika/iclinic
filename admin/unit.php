@@ -41,7 +41,7 @@ $no = 1;
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-  <title>AdminLTE 3 | Starter</title>
+  <title>Unit - Dashboard | I Clinic Unsoed</title>
 
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="../src/plugins/fontawesome-free/css/all.min.css">
