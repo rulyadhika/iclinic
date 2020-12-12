@@ -21,7 +21,7 @@ if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik'){
   if($data=='user'){
         $list_users = select("SELECT tb_akun_user.id,tb_akun_user.email,tb_akun_user.user_role,tb_biodata_user.nama,
                         tb_biodata_user.no_hp,tb_biodata_user.alamat FROM tb_akun_user JOIN tb_biodata_user 
-                        ON tb_akun_user.id = tb_biodata_user.id_akun");
+                        ON tb_akun_user.id = tb_biodata_user.id_akun ORDER BY tb_akun_user.user_role ASC");
     }elseif($data=='pesan'){
         $pesan = select("SELECT * FROM tb_saran_masukan ORDER BY waktu_submit DESC");
     }
@@ -129,7 +129,7 @@ $no = 1;
                     <td style="text-transform: capitalize;"><?= $list_user['user_role']; ?></td>
                     <td class="text-center">
                         <a class="btn btn-info mx-1 my-1 my-md-0" href="edit.php?data=user&id=<?= $list_user['id']; ?>"><i class="fa fa-pencil-alt"></i></a>
-                        <a class="btn btn-danger mx-1 my-1 my-md-0" href=""><i class="fa fa-times"></i></a>
+                        <a class="btn btn-danger mx-1 my-1 my-md-0 del-btn" data-id="<?= $list_user['id']; ?>" data-type="user" href="javascript:void(0)"><i class="fa fa-times"></i></a>
                     </td>
                   </tr>
                   <?php $no++ ?>
@@ -153,7 +153,7 @@ $no = 1;
                     <td class="font-weight-bold"><?= $no; ?></td>
                     <td ><?= $pesan['subject']; ?></td>
                     <td style="text-align: left;"><?= $pesan['pesan']; ?> <br> <br>
-                      <small class="font-italic text-muted">Dikirim pada : <?= strftime("%A, %d %B %Y",$pesan['waktu_submit'])." (".date("H:i:s",$pesan['waktu_submit']); ?> WIB) </small>
+                      <small class="font-italic text-muted">Diterima pada : <?= strftime("%A, %d %B %Y",$pesan['waktu_submit'])." (".date("H:i:s",$pesan['waktu_submit']); ?> WIB) </small>
                     </td>
                   </tr>
                   <?php $no++ ?>
@@ -203,6 +203,8 @@ $no = 1;
 <script src="../src/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="../src/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="../src/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<!-- sweetalert -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <!-- page script -->
 <script>
   $(function () {
@@ -217,5 +219,51 @@ $no = 1;
     });
   });
 </script>    
+
+
+<!-- script delete data -->
+<script>
+  $('.del-btn').on("click",async function(){
+      let confirm = await swal({
+          title: "Apakah anda yakin?",
+          text: "Setelah dihapus, anda tidak akan bisa mendapatkan data ini lagi!",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+          })
+          .then((willDelete) => {
+          if (willDelete) {
+              return true;
+          } else {
+              return false;
+          }
+      });
+
+      if(confirm==true){
+          try {
+              let result = await delData(this.dataset.type,this.dataset.id);
+              if(result==1){
+                swal('Success!', ' Data Berhasil Dihapus', 'success')
+                .then(()=>{
+                  location.reload();
+                });
+
+              }else{
+                swal('Error!', 'Data ini masih terhubung dengan database lain, silahkan cek kembali!', 'error');
+              }
+
+          } catch (error) {
+              console.error(error);
+          }
+      }
+  });
+
+  function delData(type,id){
+      return fetch("delete.php?data="+type+"&id="+id)
+      .then(result=>result.text())
+      .then(result=>result)
+  }
+</script>
+
 </body>
 </html>

@@ -529,4 +529,22 @@ setlocale(LC_ALL, 'id-ID', 'id_ID');
         }
 
     }
+
+    function delete($data){
+        global $conn;
+
+        $tabel = $data['tabel'];
+        $id_data = $data['id'];
+
+        //cek terlebih dahulu data apa yang akan dihapus
+        if($tabel=='user'){
+            if(mysqli_query($conn,"DELETE FROM tb_akun_user WHERE id = $id_data")){
+                return mysqli_affected_rows($conn);
+            };
+        }else{
+            mysqli_query($conn,"DELETE FROM $tabel WHERE id = $id_data");
+            return mysqli_affected_rows($conn);
+        }
+
+    }
 ?>

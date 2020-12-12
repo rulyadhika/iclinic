@@ -132,7 +132,7 @@ $no = 1;
                     <td class="text-<?= $poli['unit_status']=="Aktif"?'success':'danger' ?>"><?= $poli['unit_status']; ?></td>
                     <td class="text-center">
                         <a class="btn btn-info mx-1 my-1 my-md-0" href="edit.php?data=poli klinik&id=<?= $poli['id']; ?>"><i class="fa fa-pencil-alt"></i></a>
-                        <a class="btn btn-danger mx-1 my-1 my-md-0" href=""><i class="fa fa-times"></i></a>
+                        <a class="btn btn-danger mx-1 my-1 my-md-0 del-btn" data-id="<?= $poli['id']; ?>" data-type="poli" href="javascript:void(0)"><i class="fa fa-times"></i></a>
                     </td>
                   </tr>
                   <?php $no++ ?>
@@ -163,7 +163,7 @@ $no = 1;
                     <td class="text-<?= $jadwalPoli['status_jadwal']=="Aktif"?'success':'danger' ?>"><?= $jadwalPoli['status_jadwal']; ?></td>
                     <td>
                         <a class="btn btn-info mx-1 my-1 my-md-0" href="edit.php?data=jadwal poli klinik&id=<?= $jadwalPoli['id']; ?>"><i class="fa fa-pencil-alt"></i></a>
-                        <a class="btn btn-danger mx-1 my-1 my-md-0" href=""><i class="fa fa-times"></i></a>
+                        <a class="btn btn-danger mx-1 my-1 my-md-0 del-btn" data-id="<?= $jadwalPoli['id']; ?>" data-type="jadwal poli" href="javascript:void(0)"><i class="fa fa-times"></i></a>
                     </td>
                   </tr>
                   <?php $no++ ?>
@@ -192,7 +192,7 @@ $no = 1;
                     <td><?= $loket_administrasi['email']; ?></td>
                     <td class="text-success font-weight-bold">Aktif</td>
                     <td>
-                        <a class="btn btn-danger mx-1 my-1 my-md-0" href=""><i class="fa fa-times"></i></a>
+                        <a class="btn btn-danger mx-1 my-1 my-md-0 del-btn" data-id="<?= $loket_administrasi['id']; ?>" data-type="administrasi" href="javascript:void(0)"><i class="fa fa-times"></i></a>
                     </td>
                   </tr>
                   <?php $no++ ?>
@@ -239,6 +239,8 @@ $no = 1;
 <script src="../src/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
 <script src="../src/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
 <script src="../src/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<!-- sweetalert -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <!-- page script -->
 <script>
   $(function () {
@@ -256,6 +258,50 @@ $no = 1;
                 }]
     });
   });
-</script>    
+</script>   
+
+<!-- script delete data -->
+<script>
+      $('.del-btn').on("click",async function(){
+          let confirm = await swal({
+              title: "Apakah anda yakin?",
+              text: "Setelah dihapus, anda tidak akan bisa mendapatkan data ini lagi!",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+              })
+              .then((willDelete) => {
+              if (willDelete) {
+                  return true;
+              } else {
+                  return false;
+              }
+          });
+
+          if(confirm==true){
+              try {
+                  let result = await delData(this.dataset.type,this.dataset.id);
+                  if(result==1){
+                    swal('Success!', ' Data Berhasil Dihapus', 'success')
+                    .then(()=>{
+                      location.reload();
+                    });
+
+                  }else{
+                    swal('Error!', 'Data ini masih terhubung dengan database lain, silahkan cek kembali!', 'error');
+                  }
+
+              } catch (error) {
+                  console.error(error);
+              }
+          }
+      });
+
+      function delData(type,id){
+          return fetch("delete.php?data="+type+"&id="+id)
+          .then(result=>result.text())
+          .then(result=>result)
+      }
+</script>
 </body>
 </html>

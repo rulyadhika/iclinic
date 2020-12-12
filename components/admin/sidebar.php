@@ -193,11 +193,11 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
               
               <?php elseif($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik') :?>
                 <!-- list semua loket administrasi -->
-                <?php foreach($list_loket_administrasi as $loket_administrasi) :?>
+                <?php foreach($list_loket_administrasi as $loket_adm) :?>
                   <li class="nav-item">
-                      <a href="queue.php?queue=administrasi&data=<?= $loket_administrasi['no_loket']; ?>&id=<?= $loket_administrasi['id_assigned_user']; ?>" class="nav-link <?= ($queue=='administrasi' && $data == $loket_administrasi['no_loket'])? 'active' : '' ?>">
+                      <a href="queue.php?queue=administrasi&data=<?= $loket_adm['no_loket']; ?>&id=<?= $loket_adm['id_assigned_user']; ?>" class="nav-link <?= ($queue=='administrasi' && $data == $loket_adm['no_loket'])? 'active' : '' ?>">
                         <i class="fa fa-home nav-icon"></i>
-                        <p>Administrasi <?= $loket_administrasi['no_loket']; ?></p>
+                        <p>Administrasi <?= $loket_adm['no_loket']; ?></p>
                       </a>
                   </li>
                 <?php endforeach; ?>
