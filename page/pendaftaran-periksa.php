@@ -2,7 +2,7 @@
 include "../utility/function.php";
 session_start();
 if (!isset($_SESSION['login'])){
-    header("location: ../login.php");
+    header("location: ../login.php");die;
 }
 define("root",true);
 

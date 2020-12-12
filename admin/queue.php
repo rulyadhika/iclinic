@@ -1,7 +1,17 @@
 <?php 
+session_start();
+
+// redirect handler
+if(!isset($_SESSION['login'])){
+  header("Location:../login.php");die;
+}else{
+  if($_SESSION['role']=='pasien' || $_SESSION['role']=='antrian adm'){
+    header("Location:../index.php");die;
+  }
+}
 
 require '../utility/function.php';
-session_start();
+
 //constant agar bisa mengakses components navbar dan sidebar
 define("root",true);
 
@@ -47,6 +57,10 @@ $data = $_GET['data'];
 
     //data handler
     if($queue == 'administrasi'){
+      // cek terlebih dahulu siapa yg mengakses halaman ini
+      if($_SESSION['role']=='dokter'){
+        header("Location:./dashboard.php");die;
+      }else{
         //untuk keperluan antrian
         $id_unit = 1;
         $nomor_antrian_terakhir = select("SELECT nomor_antrian FROM tb_counter WHERE id_unit = 1")[0]['nomor_antrian'];
@@ -81,8 +95,13 @@ $data = $_GET['data'];
           
           echo json_encode(["qTotal"=>$total_antrian_administrasi,"pasienTerverifikasi"=>$pasienTerverifikasi,"pasienBelumVerifikasi"=>$pasienBelumVerifikasi]);die;
         }
+      }
 
     }elseif($queue== 'poli'){
+      // cek terlebih dahulu siapa yg mengakses halaman ini
+      if($_SESSION['role']=='petugas administrasi'){
+        header("Location:./dashboard.php");die;
+      }else{
       $id_akun_dokter = $_SESSION['user_id'];
 
       // pengambilan id poli
@@ -116,6 +135,7 @@ $data = $_GET['data'];
       }
       
       $data_pasien_hari_ini = array_merge($data_pasien_online_hari_ini,$data_pasien_offline_hari_ini);
+    }
     }
 
 

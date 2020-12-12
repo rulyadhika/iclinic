@@ -1,6 +1,16 @@
 <?php 
-require '../utility/function.php';
 session_start();
+
+// redirect handler
+if(!isset($_SESSION['login'])){
+  header("Location:../login.php");die;
+}else{
+  if($_SESSION['role']=='pasien' || $_SESSION['role']=='antrian adm'){
+    header("Location:../index.php");die;
+  }
+}
+
+require '../utility/function.php';
 
 //constant agar bisa mengakses components navbar dan sidebar
 define("root",true);
@@ -22,6 +32,8 @@ $id = $_GET['id'];
 
     //data handler
     if($data == 'poli klinik'){
+      // cek terlebih dahulu siapa yg mengakses halaman ini
+      if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik' || $_SESSION['role']=='petugas administrasi'){
         $poliKlinik = select("SELECT tb_unit.*,tb_akun_user.id as id_akun_dokter,tb_biodata_user.nama FROM tb_unit JOIN tb_akun_user
                       ON tb_unit.id_akun_dokter = tb_akun_user.id JOIN tb_biodata_user 
                       ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_unit.id=$id")[0];
@@ -29,17 +41,30 @@ $id = $_GET['id'];
         //mengambil seluruh nama2 dokter
         $dokter = select("SELECT tb_akun_user.id as id_akun,tb_biodata_user.nama FROM tb_akun_user JOIN tb_biodata_user 
                   ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_akun_user.user_role = 'dokter'");
-
+      }else{
+        header("Location:./dashboard.php");die;
+      }
+        
     }elseif($data == 'jadwal poli klinik'){
+      // cek terlebih dahulu siapa yg mengakses halaman ini
+      if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik' || $_SESSION['role']=='petugas administrasi'){
         $jadwalPoliKlinik = select("SELECT tb_jadwal.*,tb_unit.nama_unit,tb_biodata_user.nama as nama_dokter FROM tb_jadwal JOIN tb_unit
                             ON tb_jadwal.id_unit = tb_unit.id JOIN tb_akun_user ON tb_unit.id_akun_dokter = tb_akun_user.id 
                             JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_jadwal.id=$id")[0];
         $hari = ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"];
+      }else{
+        header("Location:./dashboard.php");die;
+      }
     }elseif($data == 'user'){
-        $user_id = $_GET['id'];
+        // cek terlebih dahulu siapa yg mengakses halaman ini
+        if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik'){
+          $user_id = $_GET['id'];
 
-        $data_user = select("SELECT tb_akun_user.id as id_akun_user,tb_akun_user.email,tb_akun_user.user_role,tb_biodata_user.*
-                    FROM tb_akun_user JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_akun_user.id = $user_id")[0];
+          $data_user = select("SELECT tb_akun_user.id as id_akun_user,tb_akun_user.email,tb_akun_user.user_role,tb_biodata_user.*
+                      FROM tb_akun_user JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_akun_user.id = $user_id")[0];
+        }else{
+          header("Location:./dashboard.php");die;
+        }
     }
 
 ?>

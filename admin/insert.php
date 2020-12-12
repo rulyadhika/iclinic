@@ -1,7 +1,17 @@
 <?php 
+session_start();
+
+// redirect handler
+if(!isset($_SESSION['login'])){
+  header("Location:../login.php");die;
+}else{
+  if($_SESSION['role']=='pasien' || $_SESSION['role']=='antrian adm'){
+    header("Location:../index.php");die;
+  }
+}
 
 require '../utility/function.php';
-session_start();
+
 
 //constant agar bisa mengakses components navbar dan sidebar
 define("root",true);
@@ -24,16 +34,41 @@ $data = $_GET['data'];
 
     //data handler
     if($data == 'jadwal poli klinik'){
+      // cek terlebih dahulu siapa yg mengakses halaman ini
+      if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik' || $_SESSION['role']=='petugas administrasi'){
         $poliKlinik = select("SELECT tb_unit.*,tb_biodata_user.nama as nama_dokter FROM tb_unit JOIN tb_akun_user
                       ON tb_unit.id_akun_dokter = tb_akun_user.id JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun
                       WHERE tb_unit.unit_status = 'Aktif'");
         $hari = ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"];
+      }else{
+        header("Location:./dashboard.php");die;
+      }
+
     }elseif($data == 'poli klinik'){
+       // cek terlebih dahulu siapa yg mengakses halaman ini
+       if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik' || $_SESSION['role']=='petugas administrasi'){
         $dokter = select("SELECT tb_akun_user.id,tb_biodata_user.nama FROM tb_akun_user JOIN tb_biodata_user
                   ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_akun_user.user_role LIKE '%dokter%'");
-    }else{
+        }else{
+          header("Location:./dashboard.php");die;
+        }
+
+    }elseif($data=='administrasi'){
+      // cek terlebih dahulu siapa yg mengakses halaman ini
+      if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik' || $_SESSION['role']=='petugas administrasi'){
         $akun_petugas_adm = select("SELECT id,email FROM tb_akun_user WHERE user_role = 'petugas administrasi'
                             AND id NOT IN (SELECT id_assigned_user FROM tb_loket_administrasi)");
+      }else{
+        header("Location:./dashboard.php");die;
+      }
+    }else{
+      // data = user
+      // cek terlebih dahulu siapa yg mengakses halaman ini
+      if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik'){
+        // do nothing
+      }else{
+        header("Location:./dashboard.php");die;
+      }
     }
 
 

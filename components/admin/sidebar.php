@@ -28,7 +28,7 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
   $list_poli_klinik = select("SELECT id,nama_unit FROM tb_unit WHERE id>1");
   
   // mengambil semua list loket administrasi
-  $list_loket_administrasi = select("SELECT id_assigned_user FROM tb_loket_administrasi");
+  $list_loket_administrasi = select("SELECT id_assigned_user,no_loket FROM tb_loket_administrasi");
 }elseif($_SESSION['role'] === 'petugas administrasi'){
   $list_poli_klinik = [];
 
@@ -193,14 +193,14 @@ if($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik'){
               
               <?php elseif($_SESSION['role'] === 'dev' || $_SESSION['role'] === 'kepala klinik') :?>
                 <!-- list semua loket administrasi -->
-                <?php for($i=0;$i<count($list_loket_administrasi);$i++) :?>
+                <?php foreach($list_loket_administrasi as $loket_administrasi) :?>
                   <li class="nav-item">
-                      <a href="queue.php?queue=administrasi&data=<?= $nomer = $i + 1; ?>&id=<?= $list_loket_administrasi[$i]['id_assigned_user']; ?>" class="nav-link <?= ($queue=='administrasi' && $data == ($nomer = $i + 1))? 'active' : '' ?>">
+                      <a href="queue.php?queue=administrasi&data=<?= $loket_administrasi['no_loket']; ?>&id=<?= $loket_administrasi['id_assigned_user']; ?>" class="nav-link <?= ($queue=='administrasi' && $data == $loket_administrasi['no_loket'])? 'active' : '' ?>">
                         <i class="fa fa-home nav-icon"></i>
-                        <p>Administrasi <?= $nomer = $i + 1; ?></p>
+                        <p>Administrasi <?= $loket_administrasi['no_loket']; ?></p>
                       </a>
                   </li>
-                <?php endfor; ?>
+                <?php endforeach; ?>
 
               <?php endif; ?>
 

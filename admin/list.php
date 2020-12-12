@@ -1,7 +1,16 @@
 <?php 
+session_start();
+
+// redirect handler
+if(!isset($_SESSION['login'])){
+  header("Location:../login.php");die;
+}else{
+  if($_SESSION['role']=='pasien' || $_SESSION['role']=='antrian adm'){
+    header("Location:../index.php");die;
+  }
+}
 
 require '../utility/function.php';
-session_start();
 
 //constant agar bisa mengakses components navbar dan sidebar
 define("root",true);
@@ -16,6 +25,8 @@ if($_SESSION['role']=='dev' || $_SESSION['role']=='kepala klinik'){
     }elseif($data=='pesan'){
         $pesan = select("SELECT * FROM tb_saran_masukan ORDER BY waktu_submit DESC");
     }
+}else{
+  header("Location:./dashboard.php");die;
 }
 
 $no = 1;
@@ -128,7 +139,7 @@ $no = 1;
                 
                 <?php elseif($data=='pesan') :?>
                 <!-- list pesan saran dan masukan -->
-                <table id="example2" class="table table-bordered table-hover" >
+                <table id="example2" class="table table-stripe table-hover" >
                   <thead>
                   <tr class="text-center">
                     <th>No.</th>

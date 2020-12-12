@@ -1,6 +1,16 @@
 <?php 
-require '../utility/function.php';
 session_start();
+
+// redirect handler
+if(!isset($_SESSION['login'])){
+  header("Location:../login.php");die;
+}else{
+  if($_SESSION['role']=='pasien' || $_SESSION['role']=='antrian adm'){
+    header("Location:../index.php");die;
+  }
+}
+
+require '../utility/function.php';
 
 //constant agar bisa mengakses components navbar dan sidebar
 define("root",true);

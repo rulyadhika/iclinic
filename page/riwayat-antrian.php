@@ -3,7 +3,7 @@ require '../utility/function.php';
 session_start();
 define("root",true);
 if (!isset($_SESSION['login'])){
-    header("location: ../login.php");
+    header("location: ../login.php");die;
 }
 ?>
 
