@@ -94,6 +94,7 @@ nav .user i{
     display: flex;
     align-items: center;
     letter-spacing: 1px;
+    z-index: 99;
 }
 .bar .bar-icon {
     margin: 0 20px;
@@ -367,6 +368,10 @@ label.pilihan {
     }
     .tanya span {
         display: none;
+    }
+
+    .tanya a span {
+        display: inherit;
     }
 }
 

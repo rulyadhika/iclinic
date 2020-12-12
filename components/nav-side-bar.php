@@ -27,7 +27,7 @@ if(!defined("root")){
     <div class="close-icon">
         <i class="fas fa-times"></i>
     </div>
-    <li><a href="<?= BASEURL."./index.php" ?>"><i class="fas fa-home"></i>Beranda</a></li>
+    <li><a href="<?= BASEURL."index.php" ?>"><i class="fas fa-home"></i>Beranda</a></li>
     <li><a href="<?= BASEURL."page/jadwal-poli.php" ?>"><i class="fas fa-calendar"></i>Jadwal Poli Klinik</a></li>
     <?php if(isset($_SESSION['login'])) :?>
         <li><a href="<?= BASEURL."page/ubah-profil.php" ?>"><i class="fas fa-user"></i>Ubah Profil</a></li>

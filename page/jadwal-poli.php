@@ -19,6 +19,7 @@ define("root",true);
     <style>
         #jadwal_wrapper{
             font-size: 14px;
+            padding-bottom: 10px;
         }
 
         #jadwal_wrapper input , #jadwal_wrapper select{
@@ -68,6 +69,21 @@ define("root",true);
             color : white;
         }
 
+        @media (max-width:600px){
+            .row{
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .col-sm-12 .col-md-6{
+                width: 100%;
+            }
+
+            .dataTables_info{
+                margin-bottom: 10px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -106,6 +122,8 @@ define("root",true);
 
         $no = 1;
         ?>
+        <div style="display:block; width: 100%; overflow-x: auto;overflow-y:hidden;height:fit-content;">
+        <span style="font-size: 12px;margin-bottom:15px;display:block;font-weight:bold;">Geser tabel jika anda menggunakan Ponsel</span>
             <table id="jadwal" class="table table-bordered table-hover">
                 <thead>
                 <tr>
@@ -152,6 +170,7 @@ define("root",true);
                 <?php endforeach; ?>
                 </tbody>
             </table>
+        </div>
         </div>
     </div>
 
