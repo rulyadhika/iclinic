@@ -12,6 +12,8 @@ if(!isset($_SESSION['login'])){
 
 require '../utility/function.php';
 
+$hari_ini = date("Y-m-d",time());
+
 //constant agar bisa mengakses components navbar dan sidebar
 define("root",true);
 
@@ -25,26 +27,26 @@ $jmlDokter = select("SELECT COUNT(id) FROM tb_akun_user WHERE user_role = 'dokte
 $jmlUser = select("SELECT COUNT(id) FROM tb_akun_user")[0]['COUNT(id)'];
 
 // ambil data pasien bpjs
-$pasienBPJSOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = CURRENT_DATE() AND jenis_pembiayaan = 'BPJS'")[0]['COUNT(id)'];
-$pasienBPJSOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND no_bpjs IS NOT NULL")[0]['COUNT(id)'];
+$pasienBPJSOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = '$hari_ini' AND jenis_pembiayaan = 'BPJS'")[0]['COUNT(id)'];
+$pasienBPJSOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = '$hari_ini' AND no_bpjs IS NOT NULL")[0]['COUNT(id)'];
 $pasienBPJS = $pasienBPJSOffline + $pasienBPJSOnline;
 
 // ambil data pasien umum
-$pasienUmumOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = CURRENT_DATE() AND jenis_pembiayaan = 'Umum'")[0]['COUNT(id)'];
-$pasienUmumOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND no_bpjs IS NULL")[0]['COUNT(id)'];
+$pasienUmumOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = '$hari_ini' AND jenis_pembiayaan = 'Umum'")[0]['COUNT(id)'];
+$pasienUmumOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = '$hari_ini' AND no_bpjs IS NULL")[0]['COUNT(id)'];
 $pasienUmum = $pasienUmumOffline + $pasienUmumOnline;
 
 // ambil data antrian administrasi
-$qTotalAdministrasi = select("SELECT COUNT(id) FROM tb_antrian_administrasi WHERE tanggal_antrian = CURRENT_DATE()")[0]['COUNT(id)'];
+$qTotalAdministrasi = select("SELECT COUNT(id) FROM tb_antrian_administrasi WHERE tanggal_antrian = '$hari_ini'")[0]['COUNT(id)'];
 
 // ambil data pasien terverifikasi
-$pasienTerverifikasiOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Terverifikasi'")[0]['COUNT(id)'];
-$pasienTerverifikasiOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Terverifikasi'")[0]['COUNT(id)'];
+$pasienTerverifikasiOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = '$hari_ini' AND verifikasi_administrasi = 'Terverifikasi'")[0]['COUNT(id)'];
+$pasienTerverifikasiOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = '$hari_ini' AND verifikasi_administrasi = 'Terverifikasi'")[0]['COUNT(id)'];
 $pasienTerverifikasi = $pasienTerverifikasiOffline + $pasienTerverifikasiOnline;
 
 // ambil data pasien belum terverifikasi
-$pasienBelumVerifikasiOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Belum Verifikasi'")[0]['COUNT(id)'];
-$pasienBelumVerifikasiOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Belum Verifikasi'")[0]['COUNT(id)'];
+$pasienBelumVerifikasiOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = '$hari_ini' AND verifikasi_administrasi = 'Belum Verifikasi'")[0]['COUNT(id)'];
+$pasienBelumVerifikasiOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = '$hari_ini' AND verifikasi_administrasi = 'Belum Verifikasi'")[0]['COUNT(id)'];
 $pasienBelumVerifikasi = $pasienBelumVerifikasiOffline + $pasienBelumVerifikasiOnline;
 
 //ambil data pendaftar

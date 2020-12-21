@@ -15,6 +15,8 @@ require '../utility/function.php';
 //constant agar bisa mengakses components navbar dan sidebar
 define("root",true);
 
+$tanggal_hari_ini = date("Y-m-d",time());
+
     //submit pendaftaran offline handler
     if(isset($_POST['tambah_pendaftaran'])){
       $result = insertPendaftaranPeriksaOffline($_POST);
@@ -37,7 +39,6 @@ define("root",true);
   }elseif(isset($_POST['cek'])){
     //handler tombol cek data pasien
     $qr_code = $_POST['qr_code'];
-    $tanggal_hari_ini = date("Y-m-d",time());
 
     $data_pasien = select("SELECT tb_unit.nama_unit, tb_pendaftaran_online.*,tb_pendaftaran_online.id as id_pendaftaran,
                           tb_akun_user.email, tb_biodata_user.* FROM tb_unit JOIN tb_jadwal ON tb_unit.id = tb_jadwal.id_unit 
@@ -66,10 +67,10 @@ $data = $_GET['data'];
         $nomor_antrian_terakhir = select("SELECT nomor_antrian FROM tb_counter WHERE id_unit = 1")[0]['nomor_antrian'];
 
         //untuk keperluan registrasi offline
-        $hari_ini = strftime("%A",time());
+        $nama_hari_ini = strftime("%A",time());
         $poli_tersedia_hari_ini = select("SELECT tb_jadwal.id as id_jadwal,tb_jadwal.waktu_praktek,tb_unit.nama_unit,tb_biodata_user.nama as nama_dokter
                                   FROM tb_jadwal JOIN tb_unit ON tb_jadwal.id_unit = tb_unit.id JOIN tb_akun_user ON tb_unit.id_akun_dokter = tb_akun_user.id 
-                                  JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_jadwal.hari_praktek = '$hari_ini' 
+                                  JOIN tb_biodata_user ON tb_akun_user.id = tb_biodata_user.id_akun WHERE tb_jadwal.hari_praktek = '$nama_hari_ini' 
                                   AND tb_jadwal.status_jadwal = 'Aktif'");
 
         // pengambilan id akun yg di assigned-kan ke loket
@@ -83,15 +84,15 @@ $data = $_GET['data'];
 
         if(isset($_POST['refresh'])){
           // megambil data jumlah pasien hari ini
-          $pasienTerverifikasiOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Terverifikasi'")[0]['COUNT(id)'];
-          $pasienTerverifikasiOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Terverifikasi'")[0]['COUNT(id)'];
+          $pasienTerverifikasiOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = '$tanggal_hari_ini' AND verifikasi_administrasi = 'Terverifikasi'")[0]['COUNT(id)'];
+          $pasienTerverifikasiOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = '$tanggal_hari_ini' AND verifikasi_administrasi = 'Terverifikasi'")[0]['COUNT(id)'];
           $pasienTerverifikasi = $pasienTerverifikasiOffline + $pasienTerverifikasiOnline;
 
-          $pasienBelumVerifikasiOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Belum Verifikasi'")[0]['COUNT(id)'];
-          $pasienBelumVerifikasiOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND verifikasi_administrasi = 'Belum Verifikasi'")[0]['COUNT(id)'];
+          $pasienBelumVerifikasiOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = '$tanggal_hari_ini' AND verifikasi_administrasi = 'Belum Verifikasi'")[0]['COUNT(id)'];
+          $pasienBelumVerifikasiOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = '$tanggal_hari_ini' AND verifikasi_administrasi = 'Belum Verifikasi'")[0]['COUNT(id)'];
           $pasienBelumVerifikasi = $pasienBelumVerifikasiOffline + $pasienBelumVerifikasiOnline;
 
-          $total_antrian_administrasi = select("SELECT COUNT(id) FROM tb_antrian_administrasi WHERE tanggal_antrian = CURRENT_DATE()")[0]['COUNT(id)'];
+          $total_antrian_administrasi = select("SELECT COUNT(id) FROM tb_antrian_administrasi WHERE tanggal_antrian = '$tanggal_hari_ini'")[0]['COUNT(id)'];
           
           echo json_encode(["qTotal"=>$total_antrian_administrasi,"pasienTerverifikasi"=>$pasienTerverifikasi,"pasienBelumVerifikasi"=>$pasienBelumVerifikasi]);die;
         }
@@ -111,7 +112,6 @@ $data = $_GET['data'];
         $id_poli = select("SELECT id FROM tb_unit WHERE id_akun_dokter = $id_akun_dokter")[0]['id'];
       }
       
-      $tanggal_hari_ini = date("Y-m-d",time());
 
       // data untuk tabel daftar pasien
       $data_pasien_online_hari_ini = select("SELECT tb_pendaftaran_online.no_antrian_poli,tb_pendaftaran_online.verifikasi_administrasi,tb_pendaftaran_online.jenis_pembiayaan,

@@ -5,7 +5,9 @@ define("root",true);
 
 //untuk merubah counter antrian pasien
 if(isset($_POST['refresh'])){
-    $dilayani = select("SELECT nomor_antrian FROM tb_counter WHERE id_unit = 1 AND tanggal_pengoperasian = CURRENT_DATE()");
+    $hari_ini = date("Y-m-d",time());
+    
+    $dilayani = select("SELECT nomor_antrian FROM tb_counter WHERE id_unit = 1 AND tanggal_pengoperasian = '$hari_ini'");
 
     if($dilayani == NULL){
         $dilayani = 0;
@@ -13,18 +15,18 @@ if(isset($_POST['refresh'])){
         $dilayani = (int) $dilayani[0]['nomor_antrian'];
     }
 
-    $pasienBPJSOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = CURRENT_DATE() AND jenis_pembiayaan = 'BPJS'")[0]['COUNT(id)'];
-    $pasienBPJSOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND no_bpjs IS NOT NULL")[0]['COUNT(id)'];
+    $pasienBPJSOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = '$hari_ini' AND jenis_pembiayaan = 'BPJS'")[0]['COUNT(id)'];
+    $pasienBPJSOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = '$hari_ini' AND no_bpjs IS NOT NULL")[0]['COUNT(id)'];
     $pasienBPJS = $pasienBPJSOffline + $pasienBPJSOnline;
 
-    $pasienUmumOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = CURRENT_DATE() AND jenis_pembiayaan = 'Umum'")[0]['COUNT(id)'];
-    $pasienUmumOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = CURRENT_DATE() AND no_bpjs IS NULL")[0]['COUNT(id)'];
+    $pasienUmumOnline = select("SELECT COUNT(id) FROM tb_pendaftaran_online WHERE tanggal_periksa = '$hari_ini' AND jenis_pembiayaan = 'Umum'")[0]['COUNT(id)'];
+    $pasienUmumOffline = select("SELECT COUNT(id) FROM tb_pendaftaran_offline WHERE tanggal_periksa = '$hari_ini' AND no_bpjs IS NULL")[0]['COUNT(id)'];
     $pasienUmum = $pasienUmumOffline + $pasienUmumOnline;
 
     // $qTotalOffline = $pasienBPJSOffline + $pasienUmumOffline;
     // $qTotalOnline = $pasienBPJSOnline + $pasienUmumOnline;
     // $qTotal = $qTotalOffline + $qTotalOnline;
-    $qTotal = $qTotal = select("SELECT COUNT(id) FROM tb_antrian_administrasi WHERE tanggal_antrian = CURRENT_DATE()")[0]['COUNT(id)'];
+    $qTotal = $qTotal = select("SELECT COUNT(id) FROM tb_antrian_administrasi WHERE tanggal_antrian = '$hari_ini'")[0]['COUNT(id)'];
 
     $time_now = date("H:i:s",time());
 
